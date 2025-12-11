@@ -151,6 +151,15 @@ nginxConfiguration() {
     echo "Executing nginx configuration ..."
     sed -i "s/worker_processes .*/worker_processes $NGINX_WORKERS;/g" /etc/nginx/nginx.conf
     sed -i "s/client_max_body_size .*/client_max_body_size $NGINX_MAX_UPLOAD_SIZE;/g" /etc/nginx/nginx.conf
+
+    # Apply custom nginx configs (after puppet has reset everything)
+    if [ -d /opt/custom_nginx ] && [ "$(ls -A /opt/custom_nginx 2>/dev/null)" ]; then
+        echo "Applying custom nginx configurations..."
+        cp -rf /opt/custom_nginx/* /etc/nginx/
+        nginx -t && nginx -s reload 2>/dev/null || true
+        echo "Custom nginx configs applied."
+    fi
+
     echo "Nginx configuration succeeded."
 }
 puppetConfiguration() {

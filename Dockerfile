@@ -63,7 +63,8 @@ ENV DATA_DIR="/data"
 COPY --from=build /tmp/zulip-server-docker.tar.gz /root/
 
 # Copy custom nginx configs (separate from Zulip source to avoid build conflicts)
-COPY custom_nginx_config/ /tmp/custom_nginx/
+# These are applied at runtime by entrypoint.sh after puppet runs
+COPY custom_nginx_config/ /opt/custom_nginx/
 
 WORKDIR /root
 RUN \
@@ -76,12 +77,6 @@ RUN \
     mv zulip-server-docker zulip && \
     /root/zulip/scripts/setup/install --hostname="$(hostname)" --email="docker-zulip" \
       --puppet-classes="zulip::profile::docker" --postgresql-version=14 && \
-    # Copy custom nginx configs to system location (after Zulip install creates nginx dirs)
-    if [ -d /tmp/custom_nginx ] && [ "$(ls -A /tmp/custom_nginx 2>/dev/null)" ]; then \
-        cp -rf /tmp/custom_nginx/* /etc/nginx/ && \
-        echo "Custom nginx configs applied"; \
-    fi && \
-    rm -rf /tmp/custom_nginx && \
     rm -f /etc/zulip/zulip-secrets.conf /etc/zulip/settings.py && \
     apt-get -qq autoremove --purge -y && \
     apt-get -qq clean && \
