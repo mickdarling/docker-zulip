@@ -34,6 +34,19 @@ RUN git clone "$ZULIP_GIT_URL" -b "$ZULIP_GIT_REF"
 
 WORKDIR /home/zulip/zulip
 
+# Copy custom files BEFORE building (so they get compiled into webpack bundles)
+COPY --chown=zulip:zulip custom_zulip_files/ /tmp/custom_zulip/
+RUN if [ -d /tmp/custom_zulip ] && [ "$(ls -A /tmp/custom_zulip 2>/dev/null)" ]; then \
+        cp -rf /tmp/custom_zulip/* /home/zulip/zulip/ && \
+        echo "Custom files applied before build"; \
+    fi && rm -rf /tmp/custom_zulip
+
+# Commit custom files to git so build-release-tarball doesn't refuse to build
+RUN git config user.email "docker@build" && \
+    git config user.name "Docker Build" && \
+    git add -A && \
+    git commit -m "Apply custom files for Docker build"
+
 # Finally, we provision the development environment and build a release tarball
 RUN SKIP_VENV_SHELL_WARNING=1 ./tools/provision --build-release-tarball-only && \
     uv run --no-sync ./tools/build-release-tarball docker && \
@@ -46,8 +59,8 @@ FROM base
 ENV DATA_DIR="/data"
 
 # Then, with a second image, we install the production release tarball.
+# Note: Custom files are already baked into the tarball from Stage 1
 COPY --from=build /tmp/zulip-server-docker.tar.gz /root/
-COPY custom_zulip_files/ /root/custom_zulip
 
 WORKDIR /root
 RUN \
@@ -58,10 +71,13 @@ RUN \
     tar -xf zulip-server-docker.tar.gz && \
     rm -f zulip-server-docker.tar.gz && \
     mv zulip-server-docker zulip && \
-    cp -rf /root/custom_zulip/* /root/zulip && \
-    rm -rf /root/custom_zulip && \
     /root/zulip/scripts/setup/install --hostname="$(hostname)" --email="docker-zulip" \
       --puppet-classes="zulip::profile::docker" --postgresql-version=14 && \
+    # Copy custom nginx configs from tarball to system location
+    if [ -d /root/zulip/etc/nginx ]; then \
+        cp -rf /root/zulip/etc/nginx/* /etc/nginx/ && \
+        echo "Custom nginx configs applied"; \
+    fi && \
     rm -f /etc/zulip/zulip-secrets.conf /etc/zulip/settings.py && \
     apt-get -qq autoremove --purge -y && \
     apt-get -qq clean && \
