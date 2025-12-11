@@ -37,7 +37,7 @@ import * as util from "./util.ts";
 */
 
 // Custom build version tag - check browser console to verify build
-console.log("%c[Zulip Custom Build] merview-v2.2 | 2025-12-11 | Build includes Merview integration", "color: #00aaff; font-weight: bold;");
+console.log("%c[Zulip Custom Build] merview-v2.3 | 2025-12-11 | Build includes Merview integration with temporary URLs", "color: #00aaff; font-weight: bold;");
 
 // Merview Configuration - Change this URL if Merview's endpoint changes
 // Format: Base URL that accepts ?url= parameter with the markdown file URL
@@ -374,24 +374,51 @@ export const update_elements = ($content: JQuery): void => {
 
     // Add "Open in Merview" links for markdown file attachments
     // Merview is a markdown rendering service at https://merview.com
+    // Uses Zulip's temporary URL API to generate authenticated URLs (valid 60 seconds)
     $content.find("a[href*='/user_uploads/']").each(function (): void {
         const $link = $(this);
         const href = $link.attr("href");
 
         // Check if this is a markdown file (case-insensitive)
         if (href && /\.md$/i.test(href)) {
-            // Build the full URL for the attachment
-            const fullUrl = new URL(href, window.location.origin).href;
-            const merviewUrl = `${MERVIEW_BASE_URL}?url=${fullUrl}`;
-
-            // Create the Merview link with icon
+            // Create a clickable Merview link that fetches temporary URL on click
             const $merviewLink = $("<a>", {
-                href: merviewUrl,
-                target: "_blank",
-                rel: "noopener noreferrer",
+                href: "#",
                 class: "merview-link",
                 title: $t({defaultMessage: "Open in Merview"}),
             }).html('<i class="zulip-icon zulip-icon-external-link" aria-hidden="true"></i> Merview');
+
+            // Add click handler to fetch temporary URL and open Merview
+            $merviewLink.on("click", async function (e): Promise<void> {
+                e.preventDefault();
+
+                try {
+                    // Extract the file path from the href
+                    // href format: /user_uploads/2/ea/xxxx/filename.md
+                    const pathMatch = href.match(/\/user_uploads\/(.+)/);
+                    if (!pathMatch) {
+                        console.error("Could not extract file path from href:", href);
+                        return;
+                    }
+
+                    const filePath = pathMatch[1]; // "2/ea/xxx/file.md"
+
+                    // Call the Zulip API to get temporary URL (valid 60 seconds, no auth required)
+                    const response = await fetch(`/json/user_uploads/${filePath}`);
+                    const data = await response.json();
+
+                    if (data.result === "success" && data.url) {
+                        // Build full temporary URL
+                        const fullTempUrl = new URL(data.url, window.location.origin).href;
+                        const merviewUrl = `${MERVIEW_BASE_URL}?url=${encodeURIComponent(fullTempUrl)}`;
+                        window.open(merviewUrl, "_blank", "noopener,noreferrer");
+                    } else {
+                        console.error("Failed to get temporary URL:", data);
+                    }
+                } catch (error) {
+                    console.error("Error fetching temporary URL:", error);
+                }
+            });
 
             // Insert after the file link with a small separator
             $link.after($merviewLink).after(" ");
