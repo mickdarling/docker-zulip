@@ -5,12 +5,10 @@ services:
     environment:
       POSTGRES_DB: "zulip"
       POSTGRES_USER: "zulip"
-      ## Note that you need to do a manual `ALTER ROLE` query if you
-      ## change this on a system after booting the postgres container
-      ## the first time on a host.  Instructions are available in README.md.
-      POSTGRES_PASSWORD: "REPLACE_WITH_SECURE_POSTGRES_PASSWORD"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
       - "postgresql-14:/var/lib/postgresql/data:rw"
+
   memcached:
     image: "memcached:alpine"
     restart: unless-stopped
@@ -25,15 +23,17 @@ services:
     environment:
       SASL_CONF_PATH: "/home/memcache/memcached.conf"
       MEMCACHED_SASL_PWDB: "/home/memcache/memcached-sasl-db"
-      MEMCACHED_PASSWORD: "REPLACE_WITH_SECURE_MEMCACHED_PASSWORD"
+      MEMCACHED_PASSWORD: "${MEMCACHED_PASSWORD}"
+
   rabbitmq:
     image: "rabbitmq:4.1"
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: "zulip"
-      RABBITMQ_DEFAULT_PASS: "REPLACE_WITH_SECURE_RABBITMQ_PASSWORD"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
     volumes:
       - "rabbitmq:/var/lib/rabbitmq:rw"
+
   redis:
     image: "redis:alpine"
     restart: unless-stopped
@@ -44,26 +44,25 @@ services:
         echo "requirepass '$$REDIS_PASSWORD'" > /etc/redis.conf
         exec redis-server /etc/redis.conf
     environment:
-      REDIS_PASSWORD: "REPLACE_WITH_SECURE_REDIS_PASSWORD"
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
     volumes:
       - "redis:/data:rw"
+
   zulip:
-    image: "zulip/docker-zulip:11.4-0"
-    restart: unless-stopped
+    # To use custom_zulip_files/, build from source instead of using pre-built image
+    # This takes ~30-45 minutes but includes the Merview integration
     build:
       context: .
       args:
-        ## Change these if you want to build zulip from a different repo/branch
-        ZULIP_GIT_URL: https://github.com/zulip/zulip.git
         ZULIP_GIT_REF: "11.4"
+    # Fallback to pre-built image (comment out 'build:' section above, uncomment below):
+    # image: "zulip/docker-zulip:11.4-0"
+    restart: unless-stopped
     ports:
-      - "25:25"
-      - "80:80"
-      - "443:443"
+      # Using port 9080 to avoid conflict with Huly on port 80
+      - "9080:80"
+      - "9443:443"
     environment:
-      ## See https://github.com/zulip/docker-zulip#configuration for
-      ## details on this section and how to discover the many
-      ## additional settings that are supported here.
       DB_HOST: "database"
       DB_HOST_PORT: "5432"
       DB_USER: "zulip"
@@ -71,50 +70,40 @@ services:
       SETTING_MEMCACHED_LOCATION: "memcached:11211"
       SETTING_RABBITMQ_HOST: "rabbitmq"
       SETTING_REDIS_HOST: "redis"
-      SECRETS_email_password: "123456789"
-      ## These should match RABBITMQ_DEFAULT_PASS, POSTGRES_PASSWORD,
-      ## MEMCACHED_PASSWORD, and REDIS_PASSWORD above.
-      SECRETS_rabbitmq_password: "REPLACE_WITH_SECURE_RABBITMQ_PASSWORD"
-      SECRETS_postgres_password: "REPLACE_WITH_SECURE_POSTGRES_PASSWORD"
-      SECRETS_memcached_password: "REPLACE_WITH_SECURE_MEMCACHED_PASSWORD"
-      SECRETS_redis_password: "REPLACE_WITH_SECURE_REDIS_PASSWORD"
-      SECRETS_secret_key: "REPLACE_WITH_SECURE_SECRET_KEY"
-      SETTING_EXTERNAL_HOST: "localhost.localdomain"
-      SETTING_ZULIP_ADMINISTRATOR: "admin@example.com"
-      SETTING_EMAIL_HOST: "" # e.g. smtp.example.com
-      SETTING_EMAIL_HOST_USER: "noreply@example.com"
-      SETTING_EMAIL_PORT: "587"
-      ## It seems that the email server needs to use ssl or tls and can't be used without it
-      SETTING_EMAIL_USE_SSL: "False"
-      SETTING_EMAIL_USE_TLS: "True"
-      ## Uncomment to enable the incoming email gateway.  You will need to
-      ## ensure that email to emaildomain.example.com is routed to this host
-      ## (e.g. via MX record)
-      # SETTING_EMAIL_GATEWAY_PATTERN: "%s@emaildomain.example.com"
+
+      # Secrets - these must match the passwords above
+      SECRETS_rabbitmq_password: "${RABBITMQ_PASSWORD}"
+      SECRETS_postgres_password: "${POSTGRES_PASSWORD}"
+      SECRETS_memcached_password: "${MEMCACHED_PASSWORD}"
+      SECRETS_redis_password: "${REDIS_PASSWORD}"
+      SECRETS_secret_key: "${ZULIP_SECRET_KEY}"
+
+      # Domain configuration
+      SETTING_EXTERNAL_HOST: "chat.dollhousemcp.com"
+      SETTING_ZULIP_ADMINISTRATOR: "${ZULIP_ADMINISTRATOR}"
+
+      # Email configuration via Resend SMTP
+      SETTING_EMAIL_HOST: "smtp.resend.com"
+      SETTING_EMAIL_HOST_USER: "resend"
+      SECRETS_email_password: "${RESEND_API_KEY}"
+      SETTING_EMAIL_PORT: "465"
+      SETTING_EMAIL_USE_SSL: "True"
+      SETTING_EMAIL_USE_TLS: "False"
+      SETTING_NOREPLY_EMAIL_ADDRESS: "noreply@dollhousemcp.com"
+      SETTING_ADD_TOKENS_TO_NOREPLY_ADDRESS: "False"
+
+      # Authentication
       ZULIP_AUTH_BACKENDS: "EmailAuthBackend"
-      ## Uncomment this when configuring the mobile push notifications service
-      # SETTING_ZULIP_SERVICE_PUSH_NOTIFICATIONS: "True"
-      # SETTING_ZULIP_SERVICE_SUBMIT_USAGE_STATISTICS: "True"
 
-      ## If you're using a reverse proxy, you'll want to provide the
-      ## comma-separated set of IP addresses (or CIDR ranges) to trust here.
-      # LOADBALANCER_IPS: ""
+      # Enable mobile push notifications (uses Zulip's push service)
+      SETTING_ZULIP_SERVICE_PUSH_NOTIFICATIONS: "True"
 
-      ## By default, files uploaded by users and profile pictures are
-      ## stored directly on the Zulip server. You can configure files
-      ## to be stored in Amazon S3 or a compatible data store
-      ## here. See docs at:
-      ##
-      ##   https://zulip.readthedocs.io/en/latest/production/upload-backends.html
-      ##
-      ## If you want to use the S3 backend, you must set
-      ## SETTING_LOCAL_UPLOADS_DIR to None as well as configuring the
-      ## other fields.
-      # SETTING_LOCAL_UPLOADS_DIR: "None"
-      # SETTING_S3_AUTH_UPLOADS_BUCKET: ""
-      # SETTING_S3_AVATAR_BUCKET: ""
-      # SETTING_S3_ENDPOINT_URL: "None"
-      # SETTING_S3_REGION: "None"
+      # Disable HTTPS requirement since Cloudflare handles SSL
+      DISABLE_HTTPS: "True"
+
+      # Trust Cloudflare's reverse proxy (entire Cloudflare IP ranges)
+      LOADBALANCER_IPS: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
+
     volumes:
       - "zulip:/data:rw"
     ulimits:
@@ -126,6 +115,97 @@ services:
       - memcached
       - rabbitmq
       - redis
+
+  formatter-bot:
+    build: ./bots/formatter
+    restart: unless-stopped
+    environment:
+      ZULIP_SITE: "https://chat.dollhousemcp.com"
+      ZULIP_EMAIL: "${FORMATTER_BOT_EMAIL}"
+      ZULIP_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    depends_on:
+      - zulip
+
+  email-notifier:
+    build: ./bots/email-notifier
+    restart: unless-stopped
+    environment:
+      EMAIL_BOT_API_KEY: "${EMAIL_BOT_API_KEY}"
+    volumes:
+      # Mount Gmail OAuth credentials (created during setup)
+      - ./bots/email-notifier/credentials.json:/app/credentials.json:ro
+      - ./bots/email-notifier/token.json:/app/token.json:rw
+    depends_on:
+      - zulip
+
+  mcp-news-bot:
+    build: ./bots/mcp-news-bot
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+      # Optional: Higher GitHub rate limits (5000/hour vs 60/hour)
+      # GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    volumes:
+      # Persist seen items between restarts
+      - ./bots/mcp-news-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  ai-news-bot:
+    build: ./bots/ai-news-bot
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      # Persist seen items between restarts
+      - ./bots/ai-news-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  merview-news-bot:
+    build: ./bots/merview-news-bot
+    restart: unless-stopped
+    environment:
+      MERVIEW_NEWS_BOT_API_KEY: "${MERVIEW_NEWS_BOT_API_KEY}"
+    volumes:
+      # Persist seen items between restarts
+      - ./bots/merview-news-bot/seen_items.json:/app/seen_items.json:rw
+    # Note: This bot connects to Merview Zulip at chat.merview.com
+
+  merview-github-bot:
+    build: ./bots/merview-github-bot
+    restart: unless-stopped
+    environment:
+      MERVIEW_GITHUB_BOT_API_KEY: "${MERVIEW_GITHUB_BOT_API_KEY}"
+      # Optional: Higher GitHub rate limits (5000/hour vs 60/hour)
+      # GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    volumes:
+      # Persist seen items between restarts
+      - ./bots/merview-github-bot/seen_items.json:/app/seen_items.json:rw
+    # Note: This bot connects to a separate Merview Zulip instance
+    # Configure the site URL in bots/merview-github-bot/config.yaml
+
+  merview-digest-bot:
+    build: ./bots/merview-digest-bot
+    restart: unless-stopped
+    environment:
+      MERVIEW_DIGEST_BOT_API_KEY: "${MERVIEW_DIGEST_BOT_API_KEY}"
+      # Optional: Higher GitHub rate limits (5000/hour vs 60/hour)
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    # Note: This bot connects to a separate Merview Zulip instance
+    # Configure the site URL in bots/merview-digest-bot/config.yaml
+
+  claude-skills-bot:
+    build: ./bots/claude-skills-bot
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      # Persist seen items between restarts
+      - ./bots/claude-skills-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      - zulip
+
 volumes:
   zulip:
   postgresql-14:
