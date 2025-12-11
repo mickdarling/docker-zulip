@@ -62,6 +62,9 @@ ENV DATA_DIR="/data"
 # Note: Custom files are already baked into the tarball from Stage 1
 COPY --from=build /tmp/zulip-server-docker.tar.gz /root/
 
+# Copy custom nginx configs (separate from Zulip source to avoid build conflicts)
+COPY custom_nginx_config/ /tmp/custom_nginx/
+
 WORKDIR /root
 RUN \
     # Make sure Nginx is started by Supervisor.
@@ -73,11 +76,12 @@ RUN \
     mv zulip-server-docker zulip && \
     /root/zulip/scripts/setup/install --hostname="$(hostname)" --email="docker-zulip" \
       --puppet-classes="zulip::profile::docker" --postgresql-version=14 && \
-    # Copy custom nginx configs from tarball to system location
-    if [ -d /root/zulip/etc/nginx ]; then \
-        cp -rf /root/zulip/etc/nginx/* /etc/nginx/ && \
+    # Copy custom nginx configs to system location (after Zulip install creates nginx dirs)
+    if [ -d /tmp/custom_nginx ] && [ "$(ls -A /tmp/custom_nginx 2>/dev/null)" ]; then \
+        cp -rf /tmp/custom_nginx/* /etc/nginx/ && \
         echo "Custom nginx configs applied"; \
     fi && \
+    rm -rf /tmp/custom_nginx && \
     rm -f /etc/zulip/zulip-secrets.conf /etc/zulip/settings.py && \
     apt-get -qq autoremove --purge -y && \
     apt-get -qq clean && \
