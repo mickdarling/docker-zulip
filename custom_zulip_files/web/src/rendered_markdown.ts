@@ -37,7 +37,7 @@ import * as util from "./util.ts";
 */
 
 // Custom build version tag - check browser console to verify build
-console.log("%c[Zulip Custom Build] merview-v2.3 | 2025-12-11 | Build includes Merview integration with temporary URLs", "color: #00aaff; font-weight: bold;");
+console.log("%c[Zulip Custom Build] merview-v2.4 | 2025-12-11 | Fixed double-encoding in Merview URLs", "color: #00aaff; font-weight: bold;");
 
 // Merview Configuration - Change this URL if Merview's endpoint changes
 // Format: Base URL that accepts ?url= parameter with the markdown file URL
@@ -409,8 +409,10 @@ export const update_elements = ($content: JQuery): void => {
 
                     if (data.result === "success" && data.url) {
                         // Build full temporary URL
+                        // Note: data.url may already contain encoded characters, so we only encode the full URL once
                         const fullTempUrl = new URL(data.url, window.location.origin).href;
-                        const merviewUrl = `${MERVIEW_BASE_URL}?url=${encodeURIComponent(fullTempUrl)}`;
+                        // Don't double-encode - just pass the URL directly since it's already properly formed
+                        const merviewUrl = `${MERVIEW_BASE_URL}?url=${fullTempUrl}`;
                         window.open(merviewUrl, "_blank", "noopener,noreferrer");
                     } else {
                         console.error("Failed to get temporary URL:", data);
