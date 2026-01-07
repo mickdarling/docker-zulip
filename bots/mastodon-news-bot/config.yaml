@@ -1,19 +1,18 @@
-# YouTube News Bot Configuration
+# Mastodon News Bot Configuration
 #
-# This bot monitors YouTube for videos related to MCP, AI agents,
+# This bot monitors Mastodon instances for posts related to MCP, AI agents,
 # and related topics, then posts updates to Zulip.
 
 # How often to check sources (in seconds)
-# YouTube API quota: 10,000 units/day, each search = 100 units
-# With 10 queries at 4-hour intervals: 6 polls × 1000 units = 6,000 units/day (safe)
-poll_interval_seconds: 14400
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
 
 # Zulip configuration
 zulip:
   site: "https://chat.dollhousemcp.com"
   email: "formatter-bot@chat.dollhousemcp.com"
   api_key: "${FORMATTER_BOT_API_KEY}"
-  stream: "youtube-news"
+  stream: "mastodon-news"
 
 # Default category if no match found
 default_category: "General"
@@ -53,46 +52,53 @@ categories:
       - "AutoGPT"
       - "agent framework"
 
-  "Tutorials":
-    topic: "Tutorials"
-    keywords:
-      - "tutorial"
-      - "how to"
-      - "guide"
-      - "walkthrough"
-      - "getting started"
-      - "introduction"
-
   "General":
     topic: "General"
     keywords: []
 
 # Data sources to monitor
 sources:
-  youtube_api:
+  # Search API (requires no auth for public posts)
+  mastodon_search:
     enabled: true
-    # YouTube Data API key (free tier: 10,000 units/day)
-    api_key: "${YOUTUBE_API_KEY}"
-    # Maximum age of videos to post (in hours)
-    max_age_hours: 168  # 1 week
-    # Maximum results per query
-    max_results: 25
+    # Instances to search (larger instances have more content)
+    instances:
+      - "mastodon.social"
+      - "hachyderm.io"
+      - "fosstodon.org"
+    # Maximum age of posts to include (in hours)
+    max_age_hours: 72  # 3 days
+    # Maximum results per query per instance
+    max_results: 20
     # Search queries
     queries:
       # MCP specific
       - "Model Context Protocol"
-      - "MCP server tutorial"
-      - "Claude MCP"
+      - "MCP server"
       # AI Agents
-      - "AI agent tutorial"
-      - "LangChain tutorial 2024"
-      - "CrewAI tutorial"
-      - "autonomous AI agent"
+      - "AI agent"
+      - "LangChain"
       # Anthropic/Claude
-      - "Claude API tutorial"
-      - "Anthropic Claude"
-      # Dollhouse specific
-      - "Dollhouse MCP"
+      - "Claude AI"
+      - "Anthropic"
+
+  # Hashtag monitoring (usually more reliable than search)
+  mastodon_hashtags:
+    enabled: true
+    instances:
+      - "mastodon.social"
+      - "hachyderm.io"
+      - "fosstodon.org"
+    max_age_hours: 72
+    max_results: 20
+    # Hashtags to monitor (without #)
+    hashtags:
+      - "MCP"
+      - "ModelContextProtocol"
+      - "AIAgents"
+      - "LLM"
+      - "Claude"
+      - "Anthropic"
 
 # Logging configuration
 logging:
