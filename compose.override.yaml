@@ -31,8 +31,9 @@ services:
         published: 9443
         app_protocol: https
     volumes:
-      # Custom nginx config for Merview CORS (runtime mount)
-      - ./custom_nginx_config/zulip-include/app:/etc/nginx/zulip-include/app:ro
+      # Custom nginx config staged for post-setup copy (can't mount directly - Puppet conflicts)
+      - ./custom_nginx_config:/opt/custom_nginx:ro
+      - ./post-setup.d/apply-nginx.sh:/data/post-setup.d/apply-nginx.sh:ro
     environment:
       # Domain configuration
       SETTING_EXTERNAL_HOST: "chat.dollhousemcp.com"
