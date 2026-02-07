@@ -360,10 +360,12 @@ Before marking as complete:
 - [ ] Filtering logic validated
 - [ ] Legal context clearly communicated
 
-**Deployment Date**: **\*\*\*\***\_**\*\*\*\***
+<!-- prettier-ignore-start -->
+**Deployment Date**: **________**
 
-**Deployed By**: ****\*\*****\_****\*\*****
+**Deployed By**: **________**
 
-**Initial Test Results**: \***\*\_\_\_\_\*\***
+**Initial Test Results**: **________**
+<!-- prettier-ignore-end -->
 
 **Status**: [ ] Ready for Production [ ] Needs Adjustments

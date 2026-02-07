@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           context: .
-          tags: zulip/docker-zulip:pr-${{ github.event.pull_request.number }}
+          tags: ${{ github.repository }}:pr-${{ github.event.pull_request.number }}
           outputs: type=docker,dest=/tmp/image.tar
           build-args: |
             ZULIP_GIT_REF=${{ steps.get-sha.outputs.commit_sha }}
@@ -150,7 +150,7 @@ jobs:
       - name: Load image into kind
         run: |
           docker load --input /tmp/image.tar
-          kind load docker-image zulip/docker-zulip:pr-${{ github.event.pull_request.number }} --name chart-testing
+          kind load docker-image ${{ github.repository }}:pr-${{ github.event.pull_request.number }} --name chart-testing
 
       - name: Run chart-testing (install)
         id: chart-testing-install
