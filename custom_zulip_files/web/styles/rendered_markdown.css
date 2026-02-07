@@ -1055,20 +1055,21 @@
     padding: calc(var(--message-box-link-focus-ring-block-padding) / 2) 0;
 }
 
-/* Merview integration - "Open in Merview" link for .md file attachments */
-.merview-link {
+/* Content action buttons — extensible via content_action_registry */
+.content-action-link {
+    --action-hue: 200;
     margin-left: 6px;
     padding: 2px 6px;
     font-size: 0.85em;
-    background-color: hsl(200deg 50% 95%);
+    background-color: hsl(var(--action-hue) 50% 95%);
     border-radius: 4px;
     text-decoration: none;
-    color: hsl(200deg 60% 40%);
+    color: hsl(var(--action-hue) 60% 40%);
     white-space: nowrap;
     transition: background-color 0.15s ease;
 
     &:hover {
-        background-color: hsl(200deg 50% 90%);
+        background-color: hsl(var(--action-hue) 50% 90%);
         text-decoration: none;
     }
 
@@ -1078,12 +1079,12 @@
     }
 }
 
-/* Dark mode support for Merview link */
-.dark-theme .merview-link {
-    background-color: hsl(200deg 30% 25%);
-    color: hsl(200deg 60% 75%);
+/* Dark mode support for content action buttons */
+.dark-theme .content-action-link {
+    background-color: hsl(var(--action-hue) 30% 25%);
+    color: hsl(var(--action-hue) 60% 75%);
 
     &:hover {
-        background-color: hsl(200deg 30% 30%);
+        background-color: hsl(var(--action-hue) 30% 30%);
     }
 }

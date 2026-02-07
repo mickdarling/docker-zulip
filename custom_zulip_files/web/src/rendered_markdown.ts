@@ -25,6 +25,8 @@ import * as user_groups from "./user_groups.ts";
 import {user_settings} from "./user_settings.ts";
 import * as util from "./util.ts";
 
+import {getMatchingActions} from "./content_action_registry.ts";
+
 /*
     rendered_markdown
 
@@ -37,11 +39,7 @@ import * as util from "./util.ts";
 */
 
 // Custom build version tag - check browser console to verify build
-console.log("%c[Zulip Custom Build] merview-v2.4 | 2025-12-11 | Fixed double-encoding in Merview URLs", "color: #00aaff; font-weight: bold;");
-
-// Merview Configuration - Change this URL if Merview's endpoint changes
-// Format: Base URL that accepts ?url= parameter with the markdown file URL
-const MERVIEW_BASE_URL = "https://merview.com/";
+console.log("%c[Zulip Custom Build] content-actions-v1.0 | 2026-02-07 | Extensible content action registry", "color: #00aaff; font-weight: bold;");
 
 export function get_user_id_for_mention_button(elem: HTMLElement): "*" | number | undefined {
     const user_id_string = $(elem).attr("data-user-id");
@@ -372,58 +370,38 @@ export const update_elements = ($content: JQuery): void => {
         $codehilite.addClass("zulip-code-block");
     });
 
-    // Add "Open in Merview" links for markdown file attachments
-    // Merview is a markdown rendering service at https://merview.com
-    // Uses Zulip's temporary URL API to generate authenticated URLs (valid 60 seconds)
+    // Content action buttons — extensible via content_action_registry
     $content.find("a[href*='/user_uploads/']").each(function (): void {
         const $link = $(this);
-        const href = $link.attr("href");
+        const href = $link.attr("href") ?? "";
+        const fileName = href.split("/").pop() ?? "";
 
-        // Check if this is a markdown file (case-insensitive)
-        if (href && /\.md$/i.test(href)) {
-            // Create a clickable Merview link that fetches temporary URL on click
-            const $merviewLink = $("<a>", {
+        const actions = getMatchingActions({href, fileName});
+        for (const action of actions) {
+            const $button = $("<a>", {
                 href: "#",
-                class: "merview-link",
-                title: $t({defaultMessage: "Open in Merview"}),
-            }).html('<i class="zulip-icon zulip-icon-external-link" aria-hidden="true"></i> Merview');
+                class: `content-action-link content-action-${action.id}`,
+                title: action.label,
+                "data-action-id": action.id,
+            }).html(`<i class="zulip-icon ${action.icon}" aria-hidden="true"></i> ${action.label}`);
 
-            // Add click handler to fetch temporary URL and open Merview
-            $merviewLink.on("click", async function (e): Promise<void> {
+            if (action.style?.hue !== undefined) {
+                $button[0]!.style.setProperty("--action-hue", String(action.style.hue));
+            }
+
+            $button.on("click", async (e) => {
                 e.preventDefault();
-
-                try {
-                    // Extract the file path from the href
-                    // href format: /user_uploads/2/ea/xxxx/filename.md
-                    const pathMatch = href.match(/\/user_uploads\/(.+)/);
-                    if (!pathMatch) {
-                        console.error("Could not extract file path from href:", href);
-                        return;
-                    }
-
-                    const filePath = pathMatch[1]; // "2/ea/xxx/file.md"
-
-                    // Call the Zulip API to get temporary URL (valid 60 seconds, no auth required)
-                    const response = await fetch(`/json/user_uploads/${filePath}`);
-                    const data = await response.json();
-
-                    if (data.result === "success" && data.url) {
-                        // Build full temporary URL
-                        // Note: data.url may already contain encoded characters, so we only encode the full URL once
-                        const fullTempUrl = new URL(data.url, window.location.origin).href;
-                        // Don't double-encode - just pass the URL directly since it's already properly formed
-                        const merviewUrl = `${MERVIEW_BASE_URL}?url=${fullTempUrl}`;
-                        window.open(merviewUrl, "_blank", "noopener,noreferrer");
-                    } else {
-                        console.error("Failed to get temporary URL:", data);
-                    }
-                } catch (error) {
-                    console.error("Error fetching temporary URL:", error);
-                }
+                e.stopPropagation();
+                const pathMatch = href.match(/\/user_uploads\/(.+)/);
+                await action.handler({
+                    element: this as HTMLAnchorElement,
+                    href,
+                    filePath: pathMatch?.[1],
+                    fileName,
+                });
             });
 
-            // Insert after the file link with a small separator
-            $link.after($merviewLink).after(" ");
+            $link.after($button).after(" ");
         }
     });
 
