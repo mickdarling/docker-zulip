@@ -14,7 +14,7 @@ if [ -f "$UPLOADS_CONF" ] && ! grep -q "Access-Control-Allow-Origin" "$UPLOADS_C
     echo "Adding CORS headers to internal uploads config..."
     sed -i '/location \/internal\/local\/uploads {/,/}/ {
         /include \/etc\/nginx\/zulip-include\/headers;/a\
-    add_header Access-Control-Allow-Origin * always;\
+    add_header Access-Control-Allow-Origin https://merview.com always;\
     add_header Access-Control-Allow-Headers Authorization always;\
     add_header Access-Control-Allow-Methods '\''GET, HEAD, OPTIONS'\'' always;
     }' "$UPLOADS_CONF"

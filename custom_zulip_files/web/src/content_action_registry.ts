@@ -104,7 +104,7 @@ registerContentAction({
 
             if (data.result === "success" && data.url) {
                 const fullTempUrl = new URL(data.url, window.location.origin).href;
-                const merviewUrl = `${MERVIEW_BASE_URL}?url=${fullTempUrl}`;
+                const merviewUrl = `${MERVIEW_BASE_URL}?url=${encodeURIComponent(fullTempUrl)}`;
                 window.open(merviewUrl, "_blank", "noopener,noreferrer");
             } else {
                 console.error("[ContentAction:merview] Failed to get temporary URL:", data);
