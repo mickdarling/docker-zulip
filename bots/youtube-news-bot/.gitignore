@@ -1,0 +1,21 @@
+# Environment and secrets
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# State files
+seen_items.json
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp

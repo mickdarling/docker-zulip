@@ -1,0 +1,18 @@
+# Environment files with secrets
+.env
+
+# Seen items state
+seen_items.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Logs
+*.log

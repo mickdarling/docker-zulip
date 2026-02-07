@@ -1,0 +1,91 @@
+# Bluesky News Bot Configuration
+#
+# This bot monitors Bluesky for posts related to MCP, AI agents,
+# and related topics, then posts updates to Zulip.
+
+# How often to check sources (in seconds)
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
+
+# Zulip configuration
+zulip:
+  site: "https://chat.dollhousemcp.com"
+  email: "formatter-bot@chat.dollhousemcp.com"
+  api_key: "${FORMATTER_BOT_API_KEY}"
+  stream: "bluesky-news"
+
+# Default category if no match found
+default_category: "General"
+
+# Categories and their associated topics
+categories:
+  "MCP Updates":
+    topic: "MCP Updates"
+    keywords:
+      - "Model Context Protocol"
+      - "MCP"
+      - "mcp server"
+      - "tool use"
+      - "function calling"
+
+  "Dollhouse MCP":
+    topic: "Dollhouse MCP"
+    keywords:
+      - "Dollhouse MCP"
+      - "DollhouseMCP"
+      - "dollhousemcp"
+
+  "Anthropic":
+    topic: "Anthropic"
+    keywords:
+      - "Claude"
+      - "Anthropic"
+      - "Claude API"
+
+  "AI Agents":
+    topic: "AI Agents"
+    keywords:
+      - "AI agent"
+      - "autonomous agent"
+      - "LangChain"
+      - "CrewAI"
+      - "AutoGPT"
+      - "agent framework"
+
+  "General":
+    topic: "General"
+    keywords: []
+
+# Data sources to monitor
+sources:
+  bluesky_search:
+    enabled: true
+    # Optional: Bluesky credentials for authenticated search
+    # Create an app password at: https://bsky.app/settings/app-passwords
+    # Without credentials, the bot will try the public API (may be geo-restricted)
+    identifier: "${BLUESKY_IDENTIFIER}"    # Your handle (e.g., yourname.bsky.social)
+    app_password: "${BLUESKY_APP_PASSWORD}" # App password (NOT your main password)
+    # Maximum age of posts to include (in hours)
+    max_age_hours: 72  # 3 days
+    # Maximum results per query
+    max_results: 25
+    # Search queries
+    queries:
+      # MCP specific
+      - "Model Context Protocol"
+      - "MCP server"
+      - "#MCP"
+      # AI Agents
+      - "AI agent"
+      - "LangChain"
+      - "CrewAI"
+      # Anthropic/Claude
+      - "Claude AI"
+      - "Anthropic"
+      # Dollhouse specific
+      - "Dollhouse MCP"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: null

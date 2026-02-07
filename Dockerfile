@@ -41,6 +41,17 @@ WORKDIR /home/zulip/zulip
 
 RUN git checkout "$ZULIP_GIT_REF"
 
+# Copy custom files BEFORE building (so they get compiled into webpack bundles)
+COPY --chown=zulip:zulip custom_zulip_files/ /tmp/custom_zulip/
+RUN if [ -d /tmp/custom_zulip ] && [ "$(ls -A /tmp/custom_zulip 2>/dev/null)" ]; then \
+        cp -rf /tmp/custom_zulip/* /home/zulip/zulip/ && \
+        echo "Custom files applied before build"; \
+    fi && rm -rf /tmp/custom_zulip
+RUN git config user.email "docker@build" && \
+    git config user.name "Docker Build" && \
+    git add -A && \
+    if ! git diff --cached --quiet; then git commit -m "Apply custom files for Docker build"; fi
+
 # Finally, we provision the development environment and build a release tarball
 RUN SKIP_VENV_SHELL_WARNING=1 ./tools/provision --build-release-tarball-only && \
     uv run --no-sync ./tools/build-release-tarball docker && \

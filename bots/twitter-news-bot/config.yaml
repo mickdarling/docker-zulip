@@ -1,0 +1,117 @@
+# Twitter/X News Bot Configuration
+#
+# This bot monitors Twitter/X for content related to MCP, AI agents,
+# and related topics, then posts updates to Zulip.
+#
+# Note: Since Twitter's official API is paid ($100+/month), this bot uses
+# free alternatives like RSS Bridge instances or Nitter. These are less
+# reliable but cost-free.
+
+# How often to check sources (in seconds)
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
+
+# Zulip configuration
+zulip:
+  site: "https://chat.dollhousemcp.com"
+  email: "formatter-bot@chat.dollhousemcp.com"
+  api_key: "${FORMATTER_BOT_API_KEY}"
+  stream: "twitter-news"
+
+# Default category if no match found
+default_category: "General"
+
+# Categories and their associated topics
+categories:
+  "MCP Updates":
+    topic: "MCP Updates"
+    keywords:
+      - "Model Context Protocol"
+      - "MCP"
+      - "mcp server"
+      - "tool use"
+      - "function calling"
+
+  "Dollhouse MCP":
+    topic: "Dollhouse MCP"
+    keywords:
+      - "Dollhouse MCP"
+      - "DollhouseMCP"
+      - "dollhousemcp"
+
+  "Merview":
+    topic: "Merview"
+    keywords:
+      - "Merview"
+      - "merview"
+
+  "Anthropic":
+    topic: "Anthropic"
+    keywords:
+      - "Claude"
+      - "Anthropic"
+      - "Claude API"
+
+  "AI Agents":
+    topic: "AI Agents"
+    keywords:
+      - "AI agent"
+      - "autonomous agent"
+      - "LangChain"
+      - "CrewAI"
+      - "AutoGPT"
+      - "agent framework"
+
+  "General":
+    topic: "General"
+    keywords: []
+
+# Data sources to monitor
+sources:
+  # RSS Bridge for Twitter search
+  # RSS Bridge is an open-source project that provides RSS feeds for various sites
+  # including Twitter. You can use public instances or self-host.
+  rss_bridge:
+    enabled: true
+    max_age_hours: 48
+    # List of RSS Bridge instances to try (in order of preference)
+    # These are public instances - availability may vary
+    # You can also self-host: https://github.com/RSS-Bridge/rss-bridge
+    instances:
+      - "https://rss-bridge.org/bridge01"
+      - "https://rss-bridge.snopyta.org"
+      - "https://wtf.roflcopter.fr/rss-bridge"
+    # Search queries to monitor
+    queries:
+      # MCP specific
+      - "Model Context Protocol"
+      - '"MCP server"'
+      - "MCP AI tool"
+      # AI Agents
+      - "AI agent LLM"
+      - "LangChain"
+      - "CrewAI"
+      - "autonomous AI"
+      # Anthropic/Claude
+      - "Claude AI"
+      - "Anthropic Claude"
+      # Dollhouse/Merview specific
+      - "Dollhouse MCP"
+      - "DollhouseMCP"
+      - "Merview"
+
+  # Google News with site:twitter.com filter (backup/alternative)
+  # This only finds tweets that appear in Google News, which is limited
+  google_news_twitter:
+    enabled: true
+    max_age_hours: 168
+    queries:
+      - "Model Context Protocol"
+      - "Claude AI"
+      - "Anthropic"
+      - "AI agent"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: null

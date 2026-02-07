@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           context: .
-          tags: zulip/docker-zulip:pr-${{ github.event.pull_request.number }}
+          tags: ${{ github.repository }}:pr-${{ github.event.pull_request.number }}
           outputs: type=docker,dest=/tmp/image.tar
           build-args: |
             ZULIP_GIT_REF=${{ steps.get-sha.outputs.commit_sha }}
@@ -150,7 +150,7 @@ jobs:
       - name: Load image into kind
         run: |
           docker load --input /tmp/image.tar
-          kind load docker-image zulip/docker-zulip:pr-${{ github.event.pull_request.number }} --name chart-testing
+          kind load docker-image ${{ github.repository }}:pr-${{ github.event.pull_request.number }} --name chart-testing
 
       - name: Run chart-testing (install)
         id: chart-testing-install
@@ -243,15 +243,19 @@ jobs:
         timeout-minutes: 5
         run: |
           echo "Waiting for zulip service to be healthy..."
-          until docker inspect --format "{{.State.Health.Status}}" $(docker compose ps -q zulip) | grep -q healthy; do sleep 5; done
+          until docker inspect --format "{{.State.Health.Status}}" $(docker compose -f compose.yaml -f ci/base.yaml --env-file ci/base.env -f "$DIR/compose.yaml" ps -q zulip) | grep -q healthy; do sleep 5; done
+        env:
+          DIR: ${{ matrix.dir }}
 
       - name: Verify all services are running
         run: |
-          docker compose ps
+          docker compose -f compose.yaml -f ci/base.yaml --env-file ci/base.env -f "$DIR/compose.yaml" ps
           # Check that no services are in a failed state
-          if docker compose ps | grep -E "(Exit|Restarting)"; then
+          if docker compose -f compose.yaml -f ci/base.yaml --env-file ci/base.env -f "$DIR/compose.yaml" ps | grep -E "(Exit|Restarting)"; then
             exit 1
           fi
+        env:
+          DIR: ${{ matrix.dir }}
 
       - name: Run tests
         timeout-minutes: 15
@@ -272,5 +276,7 @@ jobs:
         if: success() || failure()
         continue-on-error: true
         run: |
-          docker compose ps
-          docker compose logs zulip
+          docker compose -f compose.yaml -f ci/base.yaml --env-file ci/base.env -f "$DIR/compose.yaml" ps
+          docker compose -f compose.yaml -f ci/base.yaml --env-file ci/base.env -f "$DIR/compose.yaml" logs zulip
+        env:
+          DIR: ${{ matrix.dir }}
