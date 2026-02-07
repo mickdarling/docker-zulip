@@ -1,0 +1,128 @@
+# arXiv News Bot Configuration
+#
+# This bot monitors arXiv for academic papers related to
+# MCP, AI agents, and LLMs, then posts updates to Zulip.
+
+# How often to check sources (in seconds)
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
+
+# Zulip configuration
+zulip:
+  site: "https://chat.dollhousemcp.com"
+  email: "formatter-bot@chat.dollhousemcp.com"
+  api_key: "${FORMATTER_BOT_API_KEY}"
+  stream: "arxiv-news"
+
+# Default category if no match found
+default_category: "General"
+
+# Categories and their associated topics
+categories:
+  "MCP Updates":
+    topic: "MCP Updates"
+    keywords:
+      - "Model Context Protocol"
+      - "MCP"
+      - "tool use"
+      - "tool calling"
+      - "function calling"
+
+  "AI Agents":
+    topic: "AI Agents"
+    keywords:
+      - "AI agent"
+      - "autonomous agent"
+      - "LLM agent"
+      - "language model agent"
+      - "multi-agent"
+      - "agent framework"
+      - "ReAct"
+      - "chain of thought"
+      - "reasoning"
+
+  "Anthropic":
+    topic: "Anthropic"
+    keywords:
+      - "Claude"
+      - "Anthropic"
+      - "Constitutional AI"
+      - "RLHF"
+
+  "Language Models":
+    topic: "Language Models"
+    keywords:
+      - "large language model"
+      - "LLM"
+      - "GPT"
+      - "transformer"
+      - "instruction tuning"
+      - "fine-tuning"
+      - "prompt"
+
+  "Retrieval & RAG":
+    topic: "Retrieval & RAG"
+    keywords:
+      - "retrieval"
+      - "RAG"
+      - "retrieval-augmented"
+      - "knowledge base"
+      - "vector"
+      - "embedding"
+
+  "Code & Programming":
+    topic: "Code & Programming"
+    keywords:
+      - "code generation"
+      - "code synthesis"
+      - "programming"
+      - "software engineering"
+      - "code completion"
+
+  "General":
+    topic: "General"
+    keywords: []
+
+# Data sources to monitor
+sources:
+  # arXiv API search
+  arxiv_api:
+    enabled: true
+    max_age_hours: 168  # 1 week
+    max_results: 50
+    # Search queries - combined with OR
+    queries:
+      - "Model Context Protocol"
+      - "LLM agent"
+      - "tool use language model"
+      - "function calling LLM"
+      - "autonomous AI agent"
+      - "multi-agent system LLM"
+
+  # arXiv RSS feeds by category
+  arxiv_rss:
+    enabled: true
+    max_age_hours: 72  # 3 days
+    # Categories to monitor (will filter by keywords)
+    categories:
+      - "cs.AI"   # Artificial Intelligence
+      - "cs.CL"   # Computation and Language
+      - "cs.LG"   # Machine Learning
+      - "cs.MA"   # Multi-Agent Systems
+    # Only post papers matching these keywords
+    filter_keywords:
+      - "agent"
+      - "LLM"
+      - "language model"
+      - "GPT"
+      - "Claude"
+      - "tool"
+      - "function call"
+      - "MCP"
+      - "reasoning"
+      - "chain of thought"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: null

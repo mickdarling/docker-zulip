@@ -1,0 +1,56 @@
+# Claude Skills Bot Configuration
+#
+# This bot monitors web sources specifically for Anthropic's "Agent Skills" / "Claude Skills" feature.
+# Uses strict filtering to avoid generic "skills" articles and focus on Anthropic/Claude AI capabilities.
+#
+# Context: Tracking potential AGPL attribution issues related to "Dollhouse Skills" project.
+
+# How often to check sources (in seconds)
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
+
+# Zulip configuration
+zulip:
+  site: "https://chat.dollhousemcp.com"
+  email: "formatter-bot@chat.dollhousemcp.com"
+  api_key: "${FORMATTER_BOT_API_KEY}"  # Using formatter-bot credentials
+  stream: "claude-skills-watch"
+  topic: "News & Updates"
+
+# Data sources to monitor
+sources:
+  # Google News with specific search queries
+  google_news:
+    enabled: true
+    # Maximum age of articles to post (in hours)
+    max_age_hours: 168  # 1 week
+    # Specific search queries designed to find Anthropic/Claude skills news
+    # Using exact phrases where possible to reduce noise
+    search_queries:
+      - '"Anthropic" "agent skills"'
+      - '"Claude" "agent skills"'
+      - '"Anthropic skills" AI'
+      - '"Claude skills" AI'
+      - '"Claude" "custom skills"'
+      - 'Anthropic "AI skills"'
+
+  # Hacker News
+  hackernews:
+    enabled: true
+    # Maximum age of stories to post (in hours)
+    max_age_hours: 168  # 1 week
+    keywords:
+      - "Anthropic skills"
+      - "Claude skills"
+      - "Claude agent skills"
+
+  # Anthropic's own website (using site: operator)
+  anthropic_site:
+    enabled: true
+    # Maximum age of articles to post (in hours)
+    max_age_hours: 168  # 1 week
+
+# Logging configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: null     # Optional: specify a log file path

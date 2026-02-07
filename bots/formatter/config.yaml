@@ -1,0 +1,100 @@
+# Zulip Formatter Bot Configuration
+#
+# This bot watches source streams and reposts formatted versions
+# to target streams based on configurable rules.
+
+zulip:
+  # Bot credentials (can also use environment variables)
+  # ZULIP_EMAIL, ZULIP_API_KEY, ZULIP_SITE
+  site: "https://chat.dollhousemcp.com"
+  # email and api_key should be set via environment variables
+
+# Formatting rules
+# Each rule watches a source stream/topic and applies transformations
+rules:
+  # GitHub check runs formatter
+  - name: "github-checks"
+    enabled: true
+    source:
+      stream: "github"
+      # Optional: filter by topic pattern (regex)
+      topic_pattern: ".*/checks"
+    target:
+      # Same stream, or specify different stream
+      stream: "github"
+      # Topic can use variables: {source_topic}, {repo}, {branch}
+      topic: "{source_topic}"
+    # Content matching and transformation
+    match:
+      # Regex patterns to identify message types
+      patterns:
+        - name: "check_success"
+          pattern: "All checks have passed"
+          # Also match specific check names
+        - name: "check_failure"
+          pattern: "checks? (?:have |has )?failed"
+        - name: "check_pending"
+          pattern: "checks? (?:are |is )?pending"
+    format:
+      # Templates for each match type
+      check_success: |
+        ✅ **All checks passed** on `{repo}`
+        Branch: `{branch}` | [View Details]({url})
+      check_failure: |
+        ❌ **Checks failed** on `{repo}`
+        Branch: `{branch}` | [View Details]({url})
+      check_pending: |
+        ⏳ **Checks running** on `{repo}`
+        Branch: `{branch}` | [View Details]({url})
+      # Default if no pattern matches (null = don't repost)
+      default: null
+
+  # GitHub PR formatter
+  - name: "github-prs"
+    enabled: true
+    source:
+      stream: "github"
+      topic_pattern: ".*/pull requests"
+    target:
+      stream: "github"
+      topic: "{source_topic}"
+    match:
+      patterns:
+        - name: "pr_opened"
+          pattern: "opened.*pull request"
+        - name: "pr_merged"
+          pattern: "merged.*pull request"
+        - name: "pr_closed"
+          pattern: "closed.*pull request"
+    format:
+      pr_opened: |
+        🆕 **PR Opened:** {title}
+        {author} → `{branch}` | [#{number}]({url})
+      pr_merged: |
+        🎉 **PR Merged:** {title}
+        [#{number}]({url})
+      pr_closed: |
+        🚫 **PR Closed:** {title}
+        [#{number}]({url})
+      default: null
+
+  # Example: Create a digest stream with condensed notifications
+  - name: "ci-digest"
+    enabled: false  # Enable when ready
+    source:
+      stream: "github"
+      topic_pattern: ".*"
+    target:
+      stream: "ci-digest"
+      topic: "daily"
+    # Aggregate mode: collect messages and post summary
+    aggregate:
+      enabled: true
+      interval_minutes: 60
+    format:
+      default: "• {short_summary}"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: null     # Optional log file path

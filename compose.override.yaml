@@ -1,20 +1,6 @@
 ---
 secrets:
-  ## You can either set these secrets in a file named .env in this directory, or
-  ## change these from "environment:" to "file:" with a path to store them on
-  ## disk.  Be sure that files, if you use them, do not contain trailing
-  ## newlines!
-  ##
-  ## You may also add additional secrets here, prefixed with zulip__, (and also
-  ## in the "secrets:" block inside the "zulip" service, below) in order to
-  ## propagate them into Zulip's /etc/zulip/zulip-secrets.conf
-  ##
-  ## --> https://docs.docker.com/reference/compose-file/secrets/
-  ##     https://docs.docker.com/compose/how-tos/use-secrets/
   zulip__postgres_password:
-    ## Note that you need to do a manual `ALTER ROLE` query if you
-    ## change this on a system after booting the postgres container
-    ## the first time on a host.  Instructions are available in README.md.
     environment: "ZULIP__POSTGRES_PASSWORD"
   zulip__memcached_password:
     environment: "ZULIP__MEMCACHED_PASSWORD"
@@ -30,98 +16,204 @@ secrets:
 services:
   zulip:
     build:
+      context: .
       args:
-        ## If you want to build zulip from a different repo/branch, you can
-        ## change these and run:
-        ##
-        ##  docker compose build zulip
         ZULIP_GIT_URL: https://github.com/zulip/zulip.git
         ZULIP_GIT_REF: "11.5"
+    ports:
+      # Using 9080/9443 to avoid conflict with Huly on port 80
+      - name: http
+        target: 80
+        published: 9080
+        app_protocol: http
+      - name: https
+        target: 443
+        published: 9443
+        app_protocol: https
+    volumes:
+      # Custom nginx config for Merview CORS (runtime mount)
+      - ./custom_nginx_config/zulip-include/app:/etc/nginx/zulip-include/app:ro
     environment:
-      ## See https://github.com/zulip/docker-zulip#configuration for
-      ## details on this section and how to discover the many
-      ## additional settings that are supported here.
-      ##
-      ## The following two settings are required:
-      SETTING_EXTERNAL_HOST: "localhost.localdomain"
-      SETTING_ZULIP_ADMINISTRATOR: "admin@example.com"
+      # Domain configuration
+      SETTING_EXTERNAL_HOST: "chat.dollhousemcp.com"
+      SETTING_ZULIP_ADMINISTRATOR: "${ZULIP_ADMINISTRATOR}"
 
-      ## Most deploys do SSL termination outside of the container; Zulip
-      ## defaults to only serving traffic over HTTP. If you'd like this
-      ## container to do its own SSL termination, you may uncomment this to set
-      ## up an auto-renewed Lets Encrypt certificate inside the container, or
-      ## set it to "self-signed" to have Zulip generate a self-signed
-      ## certificate.  In either of these cases, the container will only serve
-      ## traffic over port 443.
-      ##
-      # CERTIFICATES: "certbot"
+      # Cloudflare handles SSL - HTTP-only is now the default, no DISABLE_HTTPS needed
+      # Trust Cloudflare reverse proxy IPs + Docker gateway
+      LOADBALANCER_IPS: "172.19.0.1,173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
 
-      ## If you're using a reverse proxy (as is required if you leave
-      ## CERTIFICATES unset), you will also need to provide the comma-separated
-      ## set of IP addresses (or CIDR ranges) to trust here.
-      ##
-      ## --> https://zulip.readthedocs.io/en/stable/production/reverse-proxies.html
-      ##
-      # LOADBALANCER_IPS: "10.0.0.0/8"
-      ## Alternately, you can default to trusting the Docker gateway IP:
-      # TRUST_GATEWAY_IP: True
+      # Email configuration via Resend SMTP
+      SETTING_EMAIL_HOST: "smtp.resend.com"
+      SETTING_EMAIL_HOST_USER: "resend"
+      SETTING_EMAIL_PORT: "465"
+      SETTING_EMAIL_USE_SSL: "True"
+      SETTING_EMAIL_USE_TLS: "False"
+      SETTING_NOREPLY_EMAIL_ADDRESS: "noreply@dollhousemcp.com"
+      SETTING_ADD_TOKENS_TO_NOREPLY_ADDRESS: "False"
 
-      ## Outgoing email settings
-      ##
-      ## --> https://zulip.readthedocs.io/en/stable/production/email.html
-      ##
-      # SETTING_EMAIL_HOST: "smtp.example.com"
-      # SETTING_EMAIL_HOST_USER: "noreply@example.com"
-      # SETTING_EMAIL_PORT: "587"
-      # SETTING_EMAIL_USE_SSL: False
-      # SETTING_EMAIL_USE_TLS: True
+      # Authentication
+      ZULIP_AUTH_BACKENDS: "EmailAuthBackend"
 
-      ## Uncomment to enable the incoming email gateway.  You will need to
-      ## ensure that email to emaildomain.example.com is routed to this host
-      ## (e.g. via MX record)
-      ##
-      ## --> https://zulip.readthedocs.io/en/stable/production/email-gateway.html
-      ##
-      # SETTING_EMAIL_GATEWAY_PATTERN: "%s@emaildomain.example.com"
-
-      ## A comma-separated list of authentication backends to enable.  Note that
-      ## this ZULIP_AUTH_BACKENDS takes the place of
-      ## SETTING_AUTHENTICATION_BACKENDS.  This defaults to just
-      ## EmailAuthBackend.
-      ##
-      ## --> https://zulip.readthedocs.io/en/stable/production/authentication-methods.html
-      ##
-      # ZULIP_AUTH_BACKENDS: "EmailAuthBackend,GoogleAuthBackend"
-
-      ## Uncomment this when configuring the mobile push notifications service.
-      ## After setting these, you will need to register the server:
-      ##
-      ##   docker compose exec -it -u zulip zulip /home/zulip/deployments/current/manage.py register_server
-      ##
-      ## --> https://zulip.readthedocs.io/en/stable/production/mobile-push-notifications.html
-      ##
-      # SETTING_ZULIP_SERVICE_PUSH_NOTIFICATIONS: True
-      # SETTING_ZULIP_SERVICE_SUBMIT_USAGE_STATISTICS: True
-
-      ## By default, files uploaded by users and profile pictures are
-      ## stored directly on the Zulip server. You can configure files
-      ## to be stored in Amazon S3 or a compatible data store
-      ## here.
-      ##
-      ## If you want to use the S3 backend, you must set
-      ## SETTING_LOCAL_UPLOADS_DIR to None as well as configuring the
-      ## other fields.
-      ##
-      ## --> https://zulip.readthedocs.io/en/stable/production/upload-backends.html
-      ##
-      # SETTING_LOCAL_UPLOADS_DIR: "None"
-      # SETTING_S3_AUTH_UPLOADS_BUCKET: ""
-      # SETTING_S3_AVATAR_BUCKET: ""
-      # SETTING_S3_ENDPOINT_URL: "None"
-      # SETTING_S3_REGION: "None"
-
-      ## For a complete list of possible settings, see:
-      ## --> https://github.com/zulip/zulip/blob/11.x/zproject/prod_settings_template.py
+      # Mobile push notifications
+      SETTING_ZULIP_SERVICE_PUSH_NOTIFICATIONS: "True"
     secrets:
-      ## Add any additional zulip__ secrets that you defined above.
       []
+
+  # === Bots ===
+
+  formatter-bot:
+    build: ./bots/formatter
+    restart: unless-stopped
+    environment:
+      ZULIP_SITE: "https://chat.dollhousemcp.com"
+      ZULIP_EMAIL: "${FORMATTER_BOT_EMAIL}"
+      ZULIP_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    depends_on:
+      - zulip
+
+  email-notifier:
+    build: ./bots/email-notifier
+    restart: unless-stopped
+    environment:
+      EMAIL_BOT_API_KEY: "${EMAIL_BOT_API_KEY}"
+    volumes:
+      - ./bots/email-notifier/config.yaml:/app/config.yaml:ro
+      - ./bots/email-notifier/credentials.json:/app/credentials.json:ro
+      - ./bots/email-notifier/token.json:/app/token.json:rw
+    depends_on:
+      - zulip
+
+  mcp-news-bot:
+    build: ./bots/mcp-news-bot
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/mcp-news-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  ai-news-bot:
+    build: ./bots/ai-news-bot
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/ai-news-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  merview-news-bot:
+    build: ./bots/merview-news-bot
+    restart: unless-stopped
+    environment:
+      MERVIEW_NEWS_BOT_API_KEY: "${MERVIEW_NEWS_BOT_API_KEY}"
+    volumes:
+      - ./bots/merview-news-bot/seen_items.json:/app/seen_items.json:rw
+
+  merview-github-bot:
+    build: ./bots/merview-github-bot
+    restart: unless-stopped
+    environment:
+      MERVIEW_GITHUB_BOT_API_KEY: "${MERVIEW_GITHUB_BOT_API_KEY}"
+    volumes:
+      - ./bots/merview-github-bot/seen_items.json:/app/seen_items.json:rw
+
+  merview-digest-bot:
+    build: ./bots/merview-digest-bot
+    restart: unless-stopped
+    environment:
+      MERVIEW_DIGEST_BOT_API_KEY: "${MERVIEW_DIGEST_BOT_API_KEY}"
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+
+  claude-skills-bot:
+    build: ./bots/claude-skills-bot
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/claude-skills-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  discord-merview-bot:
+    build: ./bots/discord-merview-bot
+    restart: unless-stopped
+    environment:
+      DISCORD_BOT_TOKEN: "${DISCORD_MERVIEW_BOT_TOKEN}"
+      MERVIEW_URL: "https://merview.com/"
+
+  arxiv-news-bot:
+    build:
+      context: ./bots
+      dockerfile: arxiv-news-bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/arxiv-news-bot/seen_items.json:/app/arxiv-news-bot/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  youtube-news-bot:
+    build:
+      context: ./bots
+      dockerfile: youtube-news-bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+      YOUTUBE_API_KEY: "${YOUTUBE_API_KEY}"
+    volumes:
+      - ./bots/youtube-news-bot/seen_items.json:/app/youtube-news-bot/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  linkedin-news-bot:
+    build:
+      context: ./bots
+      dockerfile: linkedin-news-bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/linkedin-news-bot/seen_items.json:/app/linkedin-news-bot/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  twitter-news-bot:
+    build:
+      context: ./bots
+      dockerfile: twitter-news-bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/twitter-news-bot/seen_items.json:/app/twitter-news-bot/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  bluesky-news-bot:
+    build:
+      context: ./bots
+      dockerfile: bluesky-news-bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+      BLUESKY_IDENTIFIER: "${BLUESKY_IDENTIFIER}"
+      BLUESKY_APP_PASSWORD: "${BLUESKY_APP_PASSWORD}"
+    volumes:
+      - ./bots/bluesky-news-bot/seen_items.json:/app/bluesky-news-bot/seen_items.json:rw
+    depends_on:
+      - zulip
+
+  mastodon-news-bot:
+    build:
+      context: ./bots
+      dockerfile: mastodon-news-bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
+    volumes:
+      - ./bots/mastodon-news-bot/seen_items.json:/app/mastodon-news-bot/seen_items.json:rw
+    depends_on:
+      - zulip

@@ -1,0 +1,71 @@
+# Email Notification Bot Configuration
+#
+# This bot watches Gmail and posts notifications to Zulip
+# when emails arrive at specific addresses.
+
+# How often to check for new emails (in seconds)
+poll_interval_seconds: 60
+
+# Default message template (can be overridden per target)
+default_template: |
+  **New Email**
+  **To:** `{to_addr}`
+  **From:** {from_addr}
+  **Subject:** {subject}
+  **Preview:** {snippet}...
+
+# Targets define which addresses to watch and where to post notifications
+# Each user gets their own private stream for email notifications
+# This allows users to mute/unmute their stream as needed (e.g., vacation)
+targets:
+  # Mick's private email notifications
+  - name: "mick"
+    watch_addresses:
+      - "mick@dollhousemcp.com"
+    zulip_site: "https://chat.dollhousemcp.com"
+    zulip_email: "email-bot-bot@chat.dollhousemcp.com"
+    zulip_api_key: "${EMAIL_BOT_API_KEY}"
+    stream: "email-mick"  # Private stream - only Mick + email-bot
+    topic: "notifications"
+    # Optional: custom message template
+    # message_template: |
+    #   Custom format here
+
+  # Public catch-all for team/support emails
+  - name: "public"
+    watch_addresses:
+      - "support@dollhousemcp.com"
+      - "sales@dollhousemcp.com"
+      - "info@dollhousemcp.com"
+      - "hello@dollhousemcp.com"
+      - "contact@dollhousemcp.com"
+    zulip_site: "https://chat.dollhousemcp.com"
+    zulip_email: "email-bot-bot@chat.dollhousemcp.com"
+    zulip_api_key: "${EMAIL_BOT_API_KEY}"
+    stream: "email"  # Public stream for team visibility
+    topic: "notifications"
+
+  # Template for adding new users (private streams):
+  # - name: "username"
+  #   watch_addresses:
+  #     - "username@dollhousemcp.com"
+  #   zulip_site: "https://chat.dollhousemcp.com"
+  #   zulip_email: "email-bot-bot@chat.dollhousemcp.com"
+  #   zulip_api_key: "${EMAIL_BOT_API_KEY}"
+  #   stream: "email-username"  # Create private stream, invite user + bot
+  #   topic: "notifications"
+
+  # Merview emails (uncomment when ready)
+  # - name: "merview"
+  #   watch_addresses:
+  #     - "*@merview.com"
+  #   zulip_site: "https://chat.merview.com"
+  #   zulip_email: "email-bot@chat.merview.com"
+  #   zulip_api_key: "${ZULIP_MERVIEW_API_KEY}"
+  #   stream: "email"
+  #   topic: "notifications"
+
+# Logging configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: null     # Optional log file path

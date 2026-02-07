@@ -1,0 +1,104 @@
+# LinkedIn News Bot Configuration
+#
+# This bot monitors LinkedIn content via Google News (site:linkedin.com filter)
+# for articles related to MCP, AI agents, and related topics.
+#
+# Note: LinkedIn doesn't have a public API for content search, so we use
+# Google News RSS feeds with site filtering as a workaround.
+
+# How often to check sources (in seconds)
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
+
+# Zulip configuration
+zulip:
+  site: "https://chat.dollhousemcp.com"
+  email: "formatter-bot@chat.dollhousemcp.com"
+  api_key: "${FORMATTER_BOT_API_KEY}"
+  stream: "linkedin-news"
+
+# Default category if no match found
+default_category: "General"
+
+# Categories and their associated topics
+categories:
+  "MCP Updates":
+    topic: "MCP Updates"
+    keywords:
+      - "Model Context Protocol"
+      - "MCP"
+      - "tool use"
+      - "function calling"
+
+  "Dollhouse MCP":
+    topic: "Dollhouse MCP"
+    keywords:
+      - "Dollhouse MCP"
+      - "DollhouseMCP"
+      - "dollhousemcp"
+
+  "Merview":
+    topic: "Merview"
+    keywords:
+      - "Merview"
+      - "merview"
+
+  "Anthropic":
+    topic: "Anthropic"
+    keywords:
+      - "Claude"
+      - "Anthropic"
+      - "Claude API"
+
+  "AI Agents":
+    topic: "AI Agents"
+    keywords:
+      - "AI agent"
+      - "autonomous agent"
+      - "LangChain"
+      - "CrewAI"
+      - "AutoGPT"
+      - "agent framework"
+
+  "Industry News":
+    topic: "Industry News"
+    keywords:
+      - "startup"
+      - "funding"
+      - "partnership"
+      - "acquisition"
+      - "investment"
+
+  "General":
+    topic: "General"
+    keywords: []
+
+# Data sources to monitor
+sources:
+  # Google News RSS with site:linkedin.com filter
+  google_news_linkedin:
+    enabled: true
+    max_age_hours: 168  # 1 week
+    # Search queries - each will be combined with site:linkedin.com
+    queries:
+      # MCP specific
+      - "Model Context Protocol"
+      - "MCP AI"
+      # AI Agents
+      - "AI agent"
+      - "LangChain"
+      - "autonomous agent"
+      # Anthropic/Claude
+      - "Claude AI"
+      - "Anthropic"
+      # Dollhouse/Merview specific
+      - "Dollhouse MCP"
+      - "Merview"
+      # General AI/LLM
+      - "large language model"
+      - "LLM enterprise"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: null

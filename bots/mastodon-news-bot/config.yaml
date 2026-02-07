@@ -1,0 +1,106 @@
+# Mastodon News Bot Configuration
+#
+# This bot monitors Mastodon instances for posts related to MCP, AI agents,
+# and related topics, then posts updates to Zulip.
+
+# How often to check sources (in seconds)
+# Default: 3600 (1 hour)
+poll_interval_seconds: 3600
+
+# Zulip configuration
+zulip:
+  site: "https://chat.dollhousemcp.com"
+  email: "formatter-bot@chat.dollhousemcp.com"
+  api_key: "${FORMATTER_BOT_API_KEY}"
+  stream: "mastodon-news"
+
+# Default category if no match found
+default_category: "General"
+
+# Categories and their associated topics
+categories:
+  "MCP Updates":
+    topic: "MCP Updates"
+    keywords:
+      - "Model Context Protocol"
+      - "MCP"
+      - "mcp server"
+      - "tool use"
+      - "function calling"
+
+  "Dollhouse MCP":
+    topic: "Dollhouse MCP"
+    keywords:
+      - "Dollhouse MCP"
+      - "DollhouseMCP"
+      - "dollhousemcp"
+
+  "Anthropic":
+    topic: "Anthropic"
+    keywords:
+      - "Claude"
+      - "Anthropic"
+      - "Claude API"
+
+  "AI Agents":
+    topic: "AI Agents"
+    keywords:
+      - "AI agent"
+      - "autonomous agent"
+      - "LangChain"
+      - "CrewAI"
+      - "AutoGPT"
+      - "agent framework"
+
+  "General":
+    topic: "General"
+    keywords: []
+
+# Data sources to monitor
+sources:
+  # Search API (requires no auth for public posts)
+  mastodon_search:
+    enabled: true
+    # Instances to search (larger instances have more content)
+    instances:
+      - "mastodon.social"
+      - "hachyderm.io"
+      - "fosstodon.org"
+    # Maximum age of posts to include (in hours)
+    max_age_hours: 72  # 3 days
+    # Maximum results per query per instance
+    max_results: 20
+    # Search queries
+    queries:
+      # MCP specific
+      - "Model Context Protocol"
+      - "MCP server"
+      # AI Agents
+      - "AI agent"
+      - "LangChain"
+      # Anthropic/Claude
+      - "Claude AI"
+      - "Anthropic"
+
+  # Hashtag monitoring (usually more reliable than search)
+  mastodon_hashtags:
+    enabled: true
+    instances:
+      - "mastodon.social"
+      - "hachyderm.io"
+      - "fosstodon.org"
+    max_age_hours: 72
+    max_results: 20
+    # Hashtags to monitor (without #)
+    hashtags:
+      - "MCP"
+      - "ModelContextProtocol"
+      - "AIAgents"
+      - "LLM"
+      - "Claude"
+      - "Anthropic"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: null
