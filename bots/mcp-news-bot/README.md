@@ -29,16 +29,19 @@ The bot monitors and categorizes content related to:
 ## Data Sources
 
 ### GitHub
+
 - Monitors releases from configured repositories
 - Checks MCP core repos, Dollhouse MCP, AI agent frameworks, and Zulip
 - Configurable max age for releases (default: 1 week)
 
 ### Hacker News
+
 - Searches stories using Algolia HN API
 - Keyword-based filtering
 - Configurable max age (default: 48 hours)
 
 ### Reddit
+
 - Monitors r/LocalLLaMA, r/MachineLearning, and other AI subreddits
 - Keyword-based filtering
 - Uses public JSON API (no authentication required)
@@ -55,16 +58,19 @@ The bot monitors and categorizes content related to:
 ### Setup
 
 1. **Clone or navigate to the bot directory:**
+
    ```bash
    cd /Users/mick/Developer/ClaudeCodeProjects/Zulip/bots/mcp-news-bot
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 3. **Configure environment variables:**
+
    ```bash
    cp .env.example .env
    # Edit .env and add your credentials
@@ -133,7 +139,7 @@ services:
 ### config.yaml Structure
 
 ```yaml
-poll_interval_seconds: 3600  # Check every hour
+poll_interval_seconds: 3600 # Check every hour
 
 zulip:
   site: "https://chat.dollhousemcp.com"
@@ -193,6 +199,7 @@ mcp-news-bot/
 ## Output Examples
 
 ### GitHub Release
+
 ```
 **New GitHub Release: modelcontextprotocol/specification**
 **Version:** v1.2.0
@@ -204,6 +211,7 @@ Added support for streaming responses...
 ```
 
 ### Hacker News
+
 ```
 **Hacker News: Building AI Agents with Model Context Protocol**
 **Score:** 156 points | 42 comments
@@ -213,6 +221,7 @@ Added support for streaming responses...
 ```
 
 ### Reddit
+
 ```
 **Reddit r/LocalLLaMA: New MCP server for RAG workflows**
 **Score:** 89 upvotes | 23 comments
@@ -257,6 +266,7 @@ I just released a new MCP server that makes it easy to...
 ## Support
 
 For issues or questions:
+
 - Check the logs (set `logging.level: DEBUG`)
 - Review the configuration file
 - Ensure API credentials are valid

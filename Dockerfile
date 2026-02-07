@@ -50,7 +50,7 @@ RUN if [ -d /tmp/custom_zulip ] && [ "$(ls -A /tmp/custom_zulip 2>/dev/null)" ];
 RUN git config user.email "docker@build" && \
     git config user.name "Docker Build" && \
     git add -A && \
-    git diff --cached --quiet || git commit -m "Apply custom files for Docker build"
+    if ! git diff --cached --quiet; then git commit -m "Apply custom files for Docker build"; fi
 
 # Finally, we provision the development environment and build a release tarball
 RUN SKIP_VENV_SHELL_WARNING=1 ./tools/provision --build-release-tarball-only && \

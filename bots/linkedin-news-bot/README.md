@@ -11,11 +11,13 @@ LinkedIn doesn't provide a public API for content search, so this bot uses a wor
 3. Posts matching articles to Zulip
 
 **Limitations**: This approach only finds LinkedIn articles that are indexed by Google News, which typically includes:
+
 - LinkedIn blog posts
 - Public articles and newsletters
 - Trending posts from influencers
 
 It will **not** find:
+
 - Private posts
 - Most regular user posts
 - Content behind login walls

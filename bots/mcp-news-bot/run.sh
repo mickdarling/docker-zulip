@@ -3,7 +3,7 @@
 
 set -e
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 # Check if .env exists
@@ -14,7 +14,8 @@ if [ ! -f .env ]; then
 fi
 
 # Load environment variables
-export $(cat .env | grep -v '^#' | xargs)
+# shellcheck disable=SC2046
+export $(grep -v '^#' .env | xargs)
 
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
@@ -23,6 +24,7 @@ if [ ! -d "venv" ]; then
 fi
 
 # Activate virtual environment
+# shellcheck disable=SC1091
 source venv/bin/activate
 
 # Install/update dependencies

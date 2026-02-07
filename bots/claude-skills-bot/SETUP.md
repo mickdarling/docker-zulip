@@ -17,6 +17,7 @@ python3 setup_stream.py
 ```
 
 This will:
+
 - Create the `claude-skills-watch` stream
 - Subscribe `user8@chat.dollhousemcp.com` to the stream
 - Subscribe the formatter-bot (which posts the messages)
@@ -42,6 +43,7 @@ docker-compose logs -f claude-skills-bot
 ```
 
 You should see:
+
 ```
 Starting Claude Skills Bot (polling every 3600s)...
 STRICT FILTERING ENABLED: Only Anthropic/Claude + Skills mentions
@@ -68,6 +70,7 @@ python3 claude_skills_bot.py --check-once
 ```
 
 This will:
+
 - Check all sources once
 - Apply filtering logic
 - Post any relevant articles to Zulip
@@ -78,6 +81,7 @@ This will:
 Enable debug logging to see what's being filtered:
 
 1. Edit `config.yaml`:
+
    ```yaml
    logging:
      level: "DEBUG"
@@ -89,6 +93,7 @@ Enable debug logging to see what's being filtered:
    ```
 
 You'll see logs like:
+
 ```
 DEBUG: Filtered out - no Anthropic/Claude mention: Some Generic Article
 DEBUG: Filtered out - no relevant skills mention: Anthropic Raises Funding
@@ -119,6 +124,7 @@ If you prefer to create the stream manually via the Zulip web UI:
 ### Environment Variables
 
 The bot requires `FORMATTER_BOT_API_KEY` to be set. This is already configured in:
+
 - `.env` file (for manual runs)
 - `docker-compose.yml` (for Docker runs)
 
@@ -130,8 +136,8 @@ Edit `config.yaml` to modify search behavior:
 sources:
   google_news:
     search_queries:
-      - '"Anthropic" "agent skills"'  # Add more queries
-      - '"Claude" "custom skills"'    # Or modify existing ones
+      - '"Anthropic" "agent skills"' # Add more queries
+      - '"Claude" "custom skills"' # Or modify existing ones
 ```
 
 ### Adjusting Poll Interval
@@ -139,7 +145,7 @@ sources:
 Change how often the bot checks for news:
 
 ```yaml
-poll_interval_seconds: 3600  # 1 hour (default)
+poll_interval_seconds: 3600 # 1 hour (default)
 # poll_interval_seconds: 1800  # 30 minutes
 # poll_interval_seconds: 7200  # 2 hours
 ```
@@ -151,7 +157,7 @@ Control how old articles can be before they're ignored:
 ```yaml
 sources:
   google_news:
-    max_age_hours: 168  # 1 week (default)
+    max_age_hours: 168 # 1 week (default)
     # max_age_hours: 336  # 2 weeks
     # max_age_hours: 72   # 3 days
 ```
@@ -161,6 +167,7 @@ sources:
 ### Bot Not Posting Anything
 
 1. **Check if it's filtering everything out**:
+
    ```bash
    # Enable debug logging in config.yaml
    docker-compose restart claude-skills-bot
@@ -168,6 +175,7 @@ sources:
    ```
 
 2. **Test with a single check**:
+
    ```bash
    docker-compose exec claude-skills-bot python claude_skills_bot.py --check-once
    ```
@@ -180,11 +188,13 @@ sources:
 ### Bot Can't Connect to Zulip
 
 1. **Check API key**:
+
    ```bash
    grep FORMATTER_BOT_API_KEY .env
    ```
 
 2. **Verify network connectivity**:
+
    ```bash
    docker-compose exec claude-skills-bot ping -c 3 chat.dollhousemcp.com
    ```
@@ -250,6 +260,7 @@ docker-compose ps claude-skills-bot
 ```
 
 Should show:
+
 ```
 NAME                  STATUS         PORTS
 claude-skills-bot     Up X minutes
@@ -330,6 +341,7 @@ After setup:
 ## Support
 
 For issues or questions:
+
 - Check logs: `docker-compose logs -f claude-skills-bot`
 - Review filtering logic in `claude_skills_bot.py`
 - Consult `README.md` for filtering philosophy

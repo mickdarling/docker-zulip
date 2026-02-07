@@ -21,12 +21,15 @@ Monitor public news sources for Anthropic's "Agent Skills" feature announcements
 ### 1. Strict Three-Layer Filtering
 
 **Layer 1**: Must mention Anthropic OR Claude
+
 - "anthropic", "claude ai", "claude 3", "claude 4", etc.
 
 **Layer 2**: Must mention skills in AI context
+
 - "agent skills", "claude skills", "custom skills", "skill system", etc.
 
 **Layer 3**: Must NOT be job/career related
+
 - Excludes: "job posting", "career", "hiring", "resume", "cv", etc.
 
 **Philosophy**: Better to miss some articles than flood with irrelevant content.
@@ -94,6 +97,7 @@ claude-skills-bot/
 ## Documentation Suite
 
 ### 1. README.md (203 lines)
+
 - Full feature documentation
 - Filtering philosophy
 - Architecture overview
@@ -101,6 +105,7 @@ claude-skills-bot/
 - License information
 
 ### 2. SETUP.md (336 lines)
+
 - Detailed setup instructions
 - Configuration options
 - Troubleshooting guide
@@ -108,12 +113,14 @@ claude-skills-bot/
 - Monitoring guidelines
 
 ### 3. QUICK_START.md (104 lines)
+
 - Quick reference guide
 - Essential commands
 - Key configurations
 - Common operations
 
 ### 4. LEGAL_CONTEXT.md (264 lines)
+
 - Background on Dollhouse Skills
 - AGPL-3.0 compliance issues
 - Legal implications
@@ -121,6 +128,7 @@ claude-skills-bot/
 - Ethical considerations
 
 ### 5. FILTERING_EXAMPLES.md (379 lines)
+
 - 10 detailed filtering examples
 - Layer-by-layer analysis
 - Edge case handling
@@ -128,6 +136,7 @@ claude-skills-bot/
 - Success metrics
 
 ### 6. CHECKLIST.md (320 lines)
+
 - Pre-deployment verification
 - Step-by-step deployment
 - Post-deployment checks
@@ -135,6 +144,7 @@ claude-skills-bot/
 - Troubleshooting checklist
 
 ### 7. PROJECT_SUMMARY.md (this file)
+
 - High-level overview
 - Project statistics
 - Complete documentation index
@@ -163,11 +173,13 @@ Focus on discussion topics:
 ### Anthropic Site Search
 
 Direct monitoring:
+
 - `site:anthropic.com skills`
 
 ## Message Format
 
 Each post includes:
+
 ```
 **NEW: [Article Title]**
 **Search Query:** `[query]`
@@ -178,6 +190,7 @@ _Tracking Anthropic's Agent Skills feature for potential AGPL attribution issues
 ```
 
 For Hacker News:
+
 ```
 **NEW: [Story Title]**
 **Source:** Hacker News
@@ -192,6 +205,7 @@ _Tracking Anthropic's Agent Skills feature for potential AGPL attribution issues
 ## Deployment
 
 ### Prerequisites
+
 1. Zulip server running at `https://chat.dollhousemcp.com`
 2. `FORMATTER_BOT_API_KEY` in `.env` file
 3. Docker and Docker Compose installed
@@ -224,16 +238,19 @@ python3 claude_skills_bot.py --check-once
 ## Monitoring
 
 ### Logs
+
 ```bash
 docker-compose logs -f claude-skills-bot
 ```
 
 ### Status
+
 ```bash
 docker-compose ps claude-skills-bot
 ```
 
 ### Seen Items
+
 ```bash
 cat bots/claude-skills-bot/seen_items.json | python3 -m json.tool
 ```
@@ -241,24 +258,28 @@ cat bots/claude-skills-bot/seen_items.json | python3 -m json.tool
 ## Configuration Options
 
 ### Poll Interval
+
 ```yaml
-poll_interval_seconds: 3600  # 1 hour (default)
+poll_interval_seconds: 3600 # 1 hour (default)
 ```
 
 ### Max Age
+
 ```yaml
 sources:
   google_news:
-    max_age_hours: 168  # 1 week (default)
+    max_age_hours: 168 # 1 week (default)
 ```
 
 ### Logging Level
+
 ```yaml
 logging:
-  level: "INFO"  # or "DEBUG" for verbose
+  level: "INFO" # or "DEBUG" for verbose
 ```
 
 ### Add Search Queries
+
 ```yaml
 sources:
   google_news:
@@ -269,16 +290,19 @@ sources:
 ## Maintenance
 
 ### Daily
+
 - Check stream for new posts
 - Review relevance of posted articles
 - Scan logs for errors
 
 ### Weekly
+
 - Review false positive rate
 - Check for missed articles (manual search)
 - Adjust filters if needed
 
 ### Monthly
+
 - Review search queries for relevance
 - Update terminology if Anthropic changes naming
 - Archive important findings
@@ -286,17 +310,20 @@ sources:
 ## Performance Expectations
 
 ### Target Metrics
+
 - **Precision** (posted = relevant): >90%
 - **Recall** (relevant = posted): >80%
 - **False Positive Rate**: <10%
 - **False Negative Rate**: <20%
 
 ### Expected Volume
+
 - Articles found: 0-5 per week (highly specific topic)
 - Articles filtered: 50-200 per week
 - API calls: 3 sources × 24 hours = 72 calls/day
 
 ### Resource Usage
+
 - CPU: Minimal (<1% average)
 - RAM: ~50MB
 - Disk: <1MB (seen_items.json)
@@ -305,18 +332,21 @@ sources:
 ## Legal Considerations
 
 ### Purpose
+
 - Monitor public announcements for legal timeline
 - Document attribution (or lack thereof)
 - Support potential AGPL-3.0 compliance action
 - Not adversarial - just documentation
 
 ### Fair Use
+
 - Public information only
 - Headlines and metadata, not full content
 - Legal compliance monitoring purpose
 - No commercial use
 
 ### Data Retention
+
 - Seen items: Last 2000 (automatically trimmed)
 - Zulip posts: Permanent record
 - No personal data collected
@@ -325,6 +355,7 @@ sources:
 ## Success Criteria
 
 ### Technical
+
 - [x] Runs continuously without crashes
 - [x] Checks sources every hour
 - [x] Persists state across restarts
@@ -332,12 +363,14 @@ sources:
 - [x] Rate limiting prevents issues
 
 ### Functional
+
 - [ ] High signal-to-noise ratio
 - [ ] Low false negative rate
 - [ ] No duplicate posts
 - [ ] Timely notifications
 
 ### Legal
+
 - [ ] Creates timestamped records
 - [ ] Captures attribution info
 - [ ] Provides verification URLs
@@ -346,23 +379,27 @@ sources:
 ## Known Limitations
 
 ### Search Coverage
+
 - Only monitors indexed/public content
 - May miss paywalled articles
 - Can't access private forums/Slack/Discord
 - Dependent on Google News/HN indexing
 
 ### Filtering Trade-offs
+
 - Conservative approach may miss edge cases
 - Generic "skills" terminology is challenging
 - May filter articles about skills team
 - Manual review still recommended
 
 ### API Dependencies
+
 - Google News RSS (no rate limit, but may change)
 - Hacker News Algolia API (rate limited)
 - Zulip API (rate limited)
 
 ### Legal Boundaries
+
 - Not legal advice
 - Should consult attorney
 - Documentary evidence only
@@ -428,21 +465,21 @@ Potential improvements (not currently implemented):
 
 ## Files Overview
 
-| File | Size | Lines | Purpose |
-|------|------|-------|---------|
-| claude_skills_bot.py | 20KB | 534 | Main bot code |
-| config.yaml | 1.7KB | 56 | Configuration |
-| requirements.txt | 63B | 4 | Dependencies |
-| Dockerfile | 329B | 17 | Container image |
-| setup_stream.py | 2.1KB | 70 | Stream creation |
-| seen_items.json | 42B | 2 | State tracking |
-| README.md | 5.5KB | 203 | Main docs |
-| SETUP.md | 7.9KB | 336 | Setup guide |
-| QUICK_START.md | 2.6KB | 104 | Quick reference |
-| LEGAL_CONTEXT.md | 9.2KB | 264 | Legal background |
-| FILTERING_EXAMPLES.md | 9.8KB | 379 | Filter examples |
-| CHECKLIST.md | 9.7KB | 320 | Deployment checklist |
-| PROJECT_SUMMARY.md | 11KB | 400+ | This file |
+| File                  | Size  | Lines | Purpose              |
+| --------------------- | ----- | ----- | -------------------- |
+| claude_skills_bot.py  | 20KB  | 534   | Main bot code        |
+| config.yaml           | 1.7KB | 56    | Configuration        |
+| requirements.txt      | 63B   | 4     | Dependencies         |
+| Dockerfile            | 329B  | 17    | Container image      |
+| setup_stream.py       | 2.1KB | 70    | Stream creation      |
+| seen_items.json       | 42B   | 2     | State tracking       |
+| README.md             | 5.5KB | 203   | Main docs            |
+| SETUP.md              | 7.9KB | 336   | Setup guide          |
+| QUICK_START.md        | 2.6KB | 104   | Quick reference      |
+| LEGAL_CONTEXT.md      | 9.2KB | 264   | Legal background     |
+| FILTERING_EXAMPLES.md | 9.8KB | 379   | Filter examples      |
+| CHECKLIST.md          | 9.7KB | 320   | Deployment checklist |
+| PROJECT_SUMMARY.md    | 11KB  | 400+  | This file            |
 
 **Total: ~90KB of code and documentation**
 
@@ -468,6 +505,7 @@ Part of the Zulip bot collection for Dollhouse MCP infrastructure.
 ## Contact
 
 For questions or issues related to this bot:
+
 1. Check the documentation suite
 2. Review logs for debugging information
 3. Consult with legal counsel for legal matters

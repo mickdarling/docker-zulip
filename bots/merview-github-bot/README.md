@@ -40,6 +40,7 @@ MERVIEW_GITHUB_BOT_API_KEY=your_api_key_here
 ```
 
 **GitHub Token (Optional but Recommended):**
+
 - Without a token: 60 API requests/hour (may be insufficient)
 - With a token: 5000 API requests/hour
 - Create at: https://github.com/settings/tokens
@@ -114,11 +115,11 @@ Enable/disable different event types in `config.yaml`:
 events:
   releases:
     enabled: true
-    max_age_hours: 168  # Only post releases from last week
+    max_age_hours: 168 # Only post releases from last week
 
   issues:
     enabled: true
-    max_age_hours: 24   # Only post issues from last day
+    max_age_hours: 24 # Only post issues from last day
 
   pull_requests:
     enabled: true
@@ -135,7 +136,7 @@ events:
   commits:
     enabled: true
     max_age_hours: 24
-    max_per_summary: 10  # Max commits to show in one message
+    max_per_summary: 10 # Max commits to show in one message
 ```
 
 ### Topic Format
@@ -184,6 +185,7 @@ If you see "Rate limit exceeded" errors:
 ## Example Messages
 
 ### Release
+
 ```
 **New Release: v1.2.0**
 **Tag:** v1.2.0
@@ -196,6 +198,7 @@ Added new dashboard features...
 ```
 
 ### Pull Request Merged
+
 ```
 **Pull Request Merged #42: Add dark mode support**
 **Author:** janedoe
@@ -204,6 +207,7 @@ Added new dashboard features...
 ```
 
 ### Star Milestone
+
 ```
 **Star Milestone Reached!**
 **Repository:** merview/merview
@@ -213,6 +217,7 @@ Added new dashboard features...
 ```
 
 ### Commit Summary
+
 ```
 **New Commits to main**
 **Repository:** merview/merview
@@ -244,6 +249,7 @@ merview-github-bot/
 ## Support
 
 For issues or questions:
+
 1. Check the logs: `docker-compose logs merview-github-bot`
 2. Test with: `python merview_github_bot.py --check-once`
 3. Review GitHub API status: https://www.githubstatus.com/

@@ -58,38 +58,38 @@ Each rule has:
 
 ```yaml
 rules:
-  - name: "rule-name"           # Identifier for logging
-    enabled: true               # Toggle rule on/off
+  - name: "rule-name" # Identifier for logging
+    enabled: true # Toggle rule on/off
     source:
-      stream: "github"          # Stream to watch
+      stream: "github" # Stream to watch
       topic_pattern: ".*/checks" # Optional regex for topic filtering
     target:
-      stream: "github"          # Where to post (can be different)
-      topic: "{source_topic}"   # Topic template with variables
+      stream: "github" # Where to post (can be different)
+      topic: "{source_topic}" # Topic template with variables
     match:
       patterns:
         - name: "success"
-          pattern: "passed"     # Regex to match
+          pattern: "passed" # Regex to match
     format:
-      success: "✅ {repo} passed"  # Template for matched pattern
-      default: null             # null = don't repost unmatched
+      success: "✅ {repo} passed" # Template for matched pattern
+      default: null # null = don't repost unmatched
 ```
 
 ### Available Variables
 
 Templates can use these variables:
 
-| Variable | Description |
-|----------|-------------|
-| `{source_topic}` | Original message topic |
-| `{repo}` | Extracted repository name |
-| `{branch}` | Extracted branch name |
-| `{url}` | First URL found in message |
-| `{number}` | PR/issue number (from #123) |
-| `{title}` | Text in **bold** |
-| `{author}` | Message sender name |
-| `{content}` | Full message content |
-| `{short_summary}` | First 100 chars of content |
+| Variable          | Description                 |
+| ----------------- | --------------------------- |
+| `{source_topic}`  | Original message topic      |
+| `{repo}`          | Extracted repository name   |
+| `{branch}`        | Extracted branch name       |
+| `{url}`           | First URL found in message  |
+| `{number}`        | PR/issue number (from #123) |
+| `{title}`         | Text in **bold**            |
+| `{author}`        | Message sender name         |
+| `{content}`       | Full message content        |
+| `{short_summary}` | First 100 chars of content  |
 
 ## Example: GitHub Check Formatter
 
@@ -127,13 +127,16 @@ services:
 ## Troubleshooting
 
 ### Bot not seeing messages
+
 - Ensure the bot is subscribed to the source streams
 - Check that `all_public_streams` is supported on your Zulip instance
 
 ### Messages not matching
+
 - Enable DEBUG logging to see pattern matching details
 - Test your regex patterns separately
 
 ### Loop/duplicate messages
+
 - The bot tracks processed message IDs to prevent duplicates
 - It also ignores messages from its own email address

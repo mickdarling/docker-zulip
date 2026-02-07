@@ -7,6 +7,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 ## Layer 1: Must Mention Anthropic/Claude
 
 ### PASSES Layer 1 ✓
+
 - "Anthropic announces new AI features"
 - "Claude 3 receives major update"
 - "Interview with Anthropic CEO"
@@ -14,6 +15,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 - "Anthropic raises $500M funding round"
 
 ### FAILS Layer 1 ✗
+
 - "OpenAI launches new agent framework" (no Anthropic/Claude)
 - "Google DeepMind releases new model" (no Anthropic/Claude)
 - "Top 10 AI assistants for 2024" (mentions many, but must specifically mention Anthropic/Claude)
@@ -22,6 +24,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 ## Layer 2: Must Mention Skills in AI Context
 
 ### PASSES Layer 2 ✓
+
 - "Anthropic launches agent skills framework"
 - "Claude gains custom skills support"
 - "New Claude API enables skill extensions"
@@ -29,6 +32,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 - "Claude skills marketplace announced"
 
 ### FAILS Layer 2 ✗
+
 - "Anthropic raises funding" (no skills mention)
 - "Claude 4 released" (no skills mention)
 - "Interview with Anthropic CEO" (no skills mention)
@@ -37,12 +41,14 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 ## Layer 3: Must NOT Be Job/Career Related
 
 ### PASSES Layer 3 ✓
+
 - "Anthropic launches agent skills API"
 - "Claude's new custom skill framework"
 - "How to build Claude skills for your app"
 - "Anthropic's skill system enables X"
 
 ### FAILS Layer 3 ✗
+
 - "Skills needed to work at Anthropic" (job skills)
 - "How to get hired by Anthropic" (career advice)
 - "Anthropic job posting: ML Engineer" (job posting)
@@ -56,6 +62,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Anthropic Announces Agent Skills Framework for Claude"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic" and "Claude"
 - ✓ Layer 2: Mentions "Agent Skills Framework" (AI capability)
 - ✓ Layer 3: Not about jobs or careers
@@ -69,6 +76,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Anthropic Raises $500M in Series C Funding"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic"
 - ✗ Layer 2: No mention of skills
 - N/A Layer 3: (doesn't reach this layer)
@@ -82,6 +90,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Top Skills You Need to Land a Job at Anthropic"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic"
 - ✓ Layer 2: Mentions "skills"
 - ✗ Layer 3: About job skills/career
@@ -95,6 +104,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Building Custom Agent Skills for AI Assistants"
 
 **Analysis**:
+
 - ✗ Layer 1: No mention of Anthropic or Claude
 - N/A Layer 2: (doesn't reach this layer)
 - N/A Layer 3: (doesn't reach this layer)
@@ -108,6 +118,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Claude Gains Custom Skills API in Latest Update"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Claude"
 - ✓ Layer 2: Mentions "Custom Skills API" (AI capability)
 - ✓ Layer 3: Not about jobs or careers
@@ -121,6 +132,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "10 Skills Claude AI Can Help You Learn"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Claude"
 - ✗ Layer 2: "Skills to learn" (not about Claude's skills feature)
 - ✗ Layer 3: About learning skills
@@ -134,6 +146,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Anthropic's Skill System: Extending Claude with Custom Capabilities"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic" and "Claude"
 - ✓ Layer 2: Mentions "Skill System" and "Custom Capabilities" (AI feature)
 - ✓ Layer 3: Not about jobs or careers
@@ -147,6 +160,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "How Anthropic Trained Claude: The Skills Behind the Model"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic" and "Claude"
 - ✗ Layer 2: "Skills" refers to training methods, not a features
 - N/A Layer 3: (might pass, but already filtered)
@@ -160,6 +174,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "site:anthropic.com - Introducing Claude Skills for Developers"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Claude"
 - ✓ Layer 2: "Claude Skills" (AI capability feature)
 - ✓ Layer 3: Developer feature, not job/career
@@ -173,6 +188,7 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 **Title**: "Essential Skills for Working with Claude AI"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Claude"
 - ✗ Layer 2: User skills, not Claude's skills feature
 - ✗ Layer 3: Learning/education content
@@ -182,7 +198,9 @@ The bot uses three-layer filtering to ensure only relevant articles are posted.
 ## Keyword Detection Details
 
 ### Anthropic/Claude Keywords (Layer 1)
+
 The article must contain at least one of:
+
 - "anthropic"
 - "claude ai"
 - "claude 3"
@@ -192,7 +210,9 @@ The article must contain at least one of:
 - "claude haiku"
 
 ### Skills Keywords (Layer 2)
+
 The article must contain at least one of:
+
 - "agent skills"
 - "claude skills"
 - "custom skills"
@@ -203,7 +223,9 @@ The article must contain at least one of:
 - "skills framework"
 
 ### Job/Career Exclusions (Layer 3)
+
 The article must NOT contain:
+
 - "job opening"
 - "job posting"
 - "career"
@@ -226,6 +248,7 @@ The article must NOT contain:
 **Title**: "Claude's skills at reasoning improve"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Claude"
 - ⚠️ Layer 2: "skills at reasoning" - is this the feature or capability?
 - This is a judgment call - current logic would likely filter it
@@ -241,6 +264,7 @@ The article must NOT contain:
 **Title**: "Anthropic's Claude vs ChatGPT: Agent Skills Comparison"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic" and "Claude"
 - ✓ Layer 2: Mentions "Agent Skills"
 - ✓ Layer 3: Not job/career
@@ -254,6 +278,7 @@ The article must NOT contain:
 **Title**: "How the Claude Team Built Their Skills Framework"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Claude"
 - ✓ Layer 2: Mentions "Skills Framework"
 - ✓ Layer 3: Not about jobs (it's about the technical implementation)
@@ -267,6 +292,7 @@ The article must NOT contain:
 **Title**: "Anthropic Careers: Join Our Skills Team"
 
 **Analysis**:
+
 - ✓ Layer 1: Mentions "Anthropic"
 - ⚠️ Layer 2: Mentions "Skills Team" (could be the skills feature team)
 - ✗ Layer 3: "Careers" triggers job filter
@@ -280,6 +306,7 @@ The article must NOT contain:
 ### If Too Strict (Missing Articles)
 
 Add more variations to Layer 2:
+
 ```python
 has_skills_mention = any(term in combined for term in [
     "agent skills",
@@ -300,6 +327,7 @@ has_skills_mention = any(term in combined for term in [
 ### If Too Loose (Too Many False Positives)
 
 Add more exclusions to Layer 3:
+
 ```python
 job_related = any(term in combined for term in [
     "job opening",
@@ -315,10 +343,11 @@ job_related = any(term in combined for term in [
 ### Custom Search Queries
 
 In `config.yaml`, make searches more specific:
+
 ```yaml
 search_queries:
-  - '"Anthropic" "agent skills" "framework"'  # More specific
-  - '"Claude" "skills" "API"'                 # More specific
+  - '"Anthropic" "agent skills" "framework"' # More specific
+  - '"Claude" "skills" "API"' # More specific
 ```
 
 ## Testing Filtering
@@ -326,17 +355,20 @@ search_queries:
 To test the filtering logic:
 
 1. **Enable debug logging** in `config.yaml`:
+
    ```yaml
    logging:
      level: "DEBUG"
    ```
 
 2. **Run a single check**:
+
    ```bash
    python3 claude_skills_bot.py --check-once
    ```
 
 3. **Review logs** for filtering decisions:
+
    ```
    DEBUG: Filtered out - no Anthropic/Claude mention: Title Here
    DEBUG: Filtered out - no relevant skills mention: Title Here
@@ -351,24 +383,28 @@ To test the filtering logic:
 ## Success Metrics
 
 ### Good Filtering Performance
+
 - **Precision** (posted articles are relevant): >90%
 - **Recall** (relevant articles are found): >80%
 - **False Positive Rate**: <10%
 - **False Negative Rate**: <20%
 
 ### Signs of Good Filtering
+
 - Few or no job postings make it through
 - Generic "AI skills" articles are filtered out
 - Actual Anthropic/Claude skills feature news is posted
 - Manual review confirms relevance
 
 ### Signs of Over-Filtering
+
 - Known relevant articles don't appear
 - Debug logs show many matches being filtered
 - Manually searching finds more than bot finds
 - Need to relax Layer 2 or Layer 3
 
 ### Signs of Under-Filtering
+
 - Job postings appearing in stream
 - Generic skill articles appearing
 - "How to learn AI" articles appearing

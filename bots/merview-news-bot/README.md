@@ -30,6 +30,7 @@ A Zulip bot that monitors various web sources for news about Merview and posts u
 ### 2. Configure Environment Variables
 
 Edit `.env` and set:
+
 ```bash
 MERVIEW_BOT_API_KEY=your_actual_api_key_here
 ```
@@ -37,6 +38,7 @@ MERVIEW_BOT_API_KEY=your_actual_api_key_here
 ### 3. Update Configuration
 
 Edit `config.yaml` and update the Zulip settings:
+
 - `site`: Your Merview Zulip instance URL
 - `email`: The bot's email address
 - `stream`: The stream to post to (default: "news")
@@ -46,6 +48,7 @@ Edit `config.yaml` and update the Zulip settings:
 #### Using Docker (recommended):
 
 The bot is included in the main docker-compose.yml. Simply run:
+
 ```bash
 docker-compose up -d merview-news-bot
 ```
@@ -75,6 +78,7 @@ See `config.yaml` for all configuration options:
 ## Thai Person Filtering
 
 The bot includes logic to filter out references to a person from Thailand named Merview:
+
 - Detects Thai language indicators
 - Filters social media profile links
 - Removes biographical content

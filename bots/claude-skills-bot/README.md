@@ -151,6 +151,7 @@ Posts include:
 **Better to miss some articles than flood with irrelevant content.**
 
 The filtering is intentionally strict because:
+
 - "Skills" is an extremely generic term
 - Most "skills" articles are about jobs, learning, or generic AI capabilities
 - Legal tracking requires high signal-to-noise ratio
@@ -163,11 +164,13 @@ If an article passes all filters, it's very likely to be relevant to Anthropic's
 ### Adjusting Filters
 
 If you're getting too many false positives, strengthen filters in `_is_relevant_skills_article()`:
+
 - Add more exclusion patterns
 - Require more specific terminology
 - Increase minimum keyword matches
 
 If you're missing relevant articles, relax filters:
+
 - Add more inclusive keyword variations
 - Reduce exclusion patterns
 - Review filtered items in logs (set `level: "DEBUG"`)
@@ -175,6 +178,7 @@ If you're missing relevant articles, relax filters:
 ### Adding Sources
 
 To add new sources, implement a new `check_*()` method following the pattern:
+
 1. Check if source is enabled in config
 2. Fetch data from source
 3. Apply `_is_relevant_skills_article()` filtering

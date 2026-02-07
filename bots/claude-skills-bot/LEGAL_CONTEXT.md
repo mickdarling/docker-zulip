@@ -13,6 +13,7 @@ The user created the **"Dollhouse Skills"** project, an innovative system for cr
 ### Anthropic's Agent Skills
 
 Anthropic has released (or is developing) a feature called **"Agent Skills"** (also referred to as "Claude Skills") that appears to provide similar functionality:
+
 - Custom AI capabilities
 - Extensible skill system
 - Dynamic skill loading/execution
@@ -20,11 +21,13 @@ Anthropic has released (or is developing) a feature called **"Agent Skills"** (a
 ### The Concern
 
 The user believes Anthropic may have:
+
 1. Taken inspiration from or been influenced by the Dollhouse Skills project
 2. Created a similar system without proper AGPL-3.0 compliance
 3. Not provided appropriate attribution to the original work
 
 **If Anthropic's implementation is derivative of or substantially similar to Dollhouse Skills**, they would be required to:
+
 - Release their Agent Skills implementation under AGPL-3.0
 - Provide source code access
 - Give proper attribution to the Dollhouse Skills project
@@ -34,6 +37,7 @@ The user believes Anthropic may have:
 ### AGPL-3.0 Violations
 
 If Anthropic has violated the AGPL-3.0 license, potential consequences include:
+
 - Copyright infringement claims
 - Requirement to release source code under AGPL-3.0
 - Injunctions against continued use
@@ -43,6 +47,7 @@ If Anthropic has violated the AGPL-3.0 license, potential consequences include:
 ### Importance of Documentation
 
 This bot serves a critical legal purpose:
+
 - **Timeline establishment**: Documents when Anthropic announces/releases Agent Skills features
 - **Public record**: Creates a record of public statements and announcements
 - **Attribution tracking**: Monitors whether Anthropic acknowledges inspiration or prior art
@@ -51,6 +56,7 @@ This bot serves a critical legal purpose:
 ### Not About Theft
 
 This is not about preventing idea theft (ideas cannot be copyrighted). This is about:
+
 - **License compliance**: AGPL-3.0 requirements must be followed
 - **Open source principles**: The copyleft license exists to keep derivative works open
 - **Attribution**: Proper credit for original work
@@ -61,6 +67,7 @@ This is not about preventing idea theft (ideas cannot be copyrighted). This is a
 ### Generic Search Problem
 
 The term "skills" is extremely generic and appears in millions of irrelevant articles:
+
 - Job postings: "Top 10 AI skills for 2024"
 - Career advice: "Skills you need to work in AI"
 - Learning content: "How to develop AI skills"
@@ -71,6 +78,7 @@ The term "skills" is extremely generic and appears in millions of irrelevant art
 ### Automated Filtering Solution
 
 This bot provides:
+
 1. **Continuous monitoring**: 24/7 automated checking of multiple sources
 2. **Strict filtering**: Only reports articles about Anthropic/Claude AND skills feature
 3. **High signal-to-noise**: Better to miss articles than flood with irrelevant content
@@ -132,6 +140,7 @@ The bot uses **intentionally strict filtering** because:
 ### Why Not Just Search "Anthropic"?
 
 We specifically need articles about Anthropic's **skills feature**, not:
+
 - General Anthropic news (funding, hiring, etc.)
 - Claude AI usage examples
 - Generic AI assistant articles
@@ -142,6 +151,7 @@ We specifically need articles about Anthropic's **skills feature**, not:
 ### Ideal Scenario
 
 The bot finds articles like:
+
 - "Anthropic Launches Agent Skills Framework for Claude"
 - "Claude's New Custom Skills API Now Available"
 - "Introducing Claude Skills: Extend Your AI Assistant"
@@ -150,6 +160,7 @@ The bot finds articles like:
 ### Acceptable Miss
 
 If the bot misses articles like:
+
 - Generic think pieces about AI capabilities
 - Articles that mention skills only tangentially
 - Content behind paywalls or requiring authentication
@@ -158,6 +169,7 @@ If the bot misses articles like:
 ### Unacceptable Result
 
 If the bot posts articles like:
+
 - "Top 10 AI Skills for Your Resume"
 - "How to Learn Machine Learning Skills"
 - "Anthropic Raises $500M Series C" (no skills mention)
@@ -168,6 +180,7 @@ If the bot posts articles like:
 ### Seen Items Tracking
 
 The bot maintains `seen_items.json` which:
+
 - Prevents duplicate posts
 - Persists across restarts
 - Keeps last 2000 items (prevents unbounded growth)
@@ -176,6 +189,7 @@ The bot maintains `seen_items.json` which:
 ### Legal Record Keeping
 
 All posts to the `claude-skills-watch` stream serve as:
+
 - **Timestamped records**: When articles were discovered
 - **Source documentation**: Original URLs and publication dates
 - **Attribution tracking**: Whether Anthropic acknowledges prior art
@@ -184,6 +198,7 @@ All posts to the `claude-skills-watch` stream serve as:
 ### Not Surveillance
 
 This bot only monitors **public information**:
+
 - Publicly available news articles
 - Public Hacker News discussions
 - Anthropic's public website
@@ -196,6 +211,7 @@ This bot only monitors **public information**:
 ### Fair Use
 
 This monitoring constitutes fair use:
+
 - **Purpose**: Legal compliance monitoring
 - **Nature**: Public information only
 - **Amount**: Headlines and metadata, not full articles
@@ -204,6 +220,7 @@ This monitoring constitutes fair use:
 ### Open Source Principles
 
 This is about **protecting open source**:
+
 - AGPL-3.0 exists to keep software free
 - Copyleft licenses prevent proprietary capture
 - Attribution is a core open source value
@@ -212,6 +229,7 @@ This is about **protecting open source**:
 ### Not Anti-Anthropic
 
 This monitoring is not adversarial:
+
 - Anthropic makes excellent AI systems
 - Claude is a valuable product
 - Competition drives innovation
@@ -224,6 +242,7 @@ If Anthropic hasn't violated AGPL-3.0, this monitoring is harmless documentation
 ### When to Review Stream
 
 Check the `claude-skills-watch` stream:
+
 - Daily during active development periods
 - After major Anthropic announcements
 - When preparing legal documentation
@@ -232,6 +251,7 @@ Check the `claude-skills-watch` stream:
 ### What to Do with Findings
 
 When relevant articles are posted:
+
 1. **Read the full article**: Don't rely only on the bot's summary
 2. **Document thoroughly**: Save copies, take screenshots
 3. **Analyze for similarity**: Compare to Dollhouse Skills
@@ -241,6 +261,7 @@ When relevant articles are posted:
 ### Adjusting Sensitivity
 
 If filtering is:
+
 - **Too strict**: Edit `_is_relevant_skills_article()` to be more lenient
 - **Too loose**: Add more exclusion patterns or require stricter matches
 - **Missing sources**: Add more search queries in `config.yaml`
@@ -248,6 +269,7 @@ If filtering is:
 ## Disclaimer
 
 This bot and documentation are for informational purposes. They do not constitute legal advice. Consult with qualified legal counsel regarding:
+
 - AGPL-3.0 interpretation
 - Copyright infringement claims
 - Licensing compliance

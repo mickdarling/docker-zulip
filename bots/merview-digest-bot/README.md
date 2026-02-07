@@ -55,6 +55,7 @@ GITHUB_TOKEN=your_github_token_here
 ```
 
 To create a GitHub token:
+
 - Go to https://github.com/settings/tokens
 - Generate a new token (classic)
 - Select scope: `public_repo` (for public repositories)
@@ -66,8 +67,8 @@ Edit `config.yaml` and update:
 
 ```yaml
 zulip:
-  site: "https://chat.merview.com"  # Your Merview Zulip URL
-  email: "digest-bot@chat.merview.com"  # Bot's email address
+  site: "https://chat.merview.com" # Your Merview Zulip URL
+  email: "digest-bot@chat.merview.com" # Bot's email address
   digest_stream: "digest"
 
 github:
@@ -84,8 +85,8 @@ zulip_monitoring:
     # Add streams you want to monitor
 
 schedule:
-  day: "sunday"  # When to generate digest
-  hour: 18  # Hour in UTC (18 = 6pm UTC)
+  day: "sunday" # When to generate digest
+  hour: 18 # Hour in UTC (18 = 6pm UTC)
 ```
 
 ### 5. Run the Bot
@@ -158,21 +159,25 @@ The digest includes a "LinkedIn Draft" section at the end with a condensed versi
 The digest includes the following sections:
 
 ### GitHub Activity
+
 - **Releases**: New versions released during the week
 - **Development**: PR and issue statistics, contributor count
 - **Notable PRs**: Top pull requests by activity
 - **Repository Stats**: Current stars and forks
 
 ### News & Mentions
+
 - Links to all news items discovered during the week
 - Sourced from the merview-news-bot and news stream
 
 ### Community Activity
+
 - Total message count across monitored streams
 - Active user count
 - Most active discussion topics with message counts
 
 ### LinkedIn Draft
+
 - Condensed highlights perfect for social media
 - Professional tone suitable for public sharing
 - Pre-formatted with hashtags
@@ -190,12 +195,14 @@ See `config.yaml` for all available options:
 ## Rate Limits
 
 ### GitHub API
+
 - **Without token**: 60 requests/hour (may be insufficient for multiple repos)
 - **With token**: 5000 requests/hour (recommended)
 
 If you see GitHub API errors, add a `GITHUB_TOKEN` to your `.env` file.
 
 ### Zulip API
+
 No rate limit concerns for typical usage.
 
 ## Troubleshooting
@@ -243,7 +250,7 @@ Enable debug logging in `config.yaml`:
 ```yaml
 logging:
   level: "DEBUG"
-  file: "digest_bot.log"  # Optional: log to file
+  file: "digest_bot.log" # Optional: log to file
 ```
 
 ## Privacy & Security

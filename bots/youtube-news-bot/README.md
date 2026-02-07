@@ -91,11 +91,11 @@ docker run -d --env-file youtube-news-bot/.env youtube-news-bot
 
 YouTube Data API v3 has a daily quota of 10,000 units (free tier):
 
-| Operation | Cost |
-|-----------|------|
-| Search | 100 units |
-| Video details | 1 unit |
+| Operation     | Cost      |
+| ------------- | --------- |
+| Search        | 100 units |
+| Video details | 1 unit    |
 
-With 10 search queries running hourly, you'd use: 10 * 100 * 24 = 24,000 units/day (over quota).
+With 10 search queries running hourly, you'd use: 10 _ 100 _ 24 = 24,000 units/day (over quota).
 
 **Recommendation**: Run every 2-4 hours instead of hourly, or reduce the number of search queries.

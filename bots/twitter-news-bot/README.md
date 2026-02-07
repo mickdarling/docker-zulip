@@ -12,12 +12,14 @@ Since Twitter's official API is now paid ($100+/month for Basic tier), this bot 
 ### Limitations
 
 **RSS Bridge**:
+
 - Public instances may be slow or unavailable
 - Twitter may block requests from known bridge IPs
 - Results are less comprehensive than official API
 - Consider self-hosting for reliability
 
 **Google News**:
+
 - Only finds tweets that are indexed by Google News
 - Very limited coverage
 

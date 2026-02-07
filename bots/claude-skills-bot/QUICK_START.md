@@ -60,6 +60,7 @@ python3 claude_skills_bot.py --check-once
 ## Search Queries
 
 The bot searches for:
+
 - `"Anthropic" "agent skills"`
 - `"Claude" "agent skills"`
 - `"Anthropic skills" AI`
@@ -68,6 +69,7 @@ The bot searches for:
 - `Anthropic "AI skills"`
 
 Plus Hacker News keywords:
+
 - `Anthropic skills`
 - `Claude skills`
 - `Claude agent skills`
@@ -75,6 +77,7 @@ Plus Hacker News keywords:
 ## Filtering Rules
 
 **ONLY posts articles that**:
+
 1. Mention Anthropic OR Claude (company/product)
 2. AND mention skills in AI context (agent skills, claude skills, etc.)
 3. AND are NOT about jobs/careers/learning/resumes

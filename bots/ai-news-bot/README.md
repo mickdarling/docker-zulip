@@ -26,6 +26,7 @@ The bot monitors and categorizes content related to:
 ## Data Sources
 
 ### RSS Feeds
+
 - **Hugging Face Blog**: Latest open-source models and tools
 - **OpenAI Blog**: GPT updates and research announcements
 - **Google DeepMind**: Research breakthroughs and model releases
@@ -34,11 +35,13 @@ The bot monitors and categorizes content related to:
 Note: Anthropic and Meta AI/FAIR do not provide public RSS feeds.
 
 ### Hacker News
+
 - Searches stories using Algolia HN API
 - Keywords: GPT, LLM, transformer, neural network, deep learning, etc.
 - Configurable max age (default: 48 hours)
 
 ### Google News
+
 - Monitors news for AI-related search terms
 - Keywords: artificial intelligence, large language model, GPT-4, Claude AI, etc.
 - Configurable max age (default: 1 week)
@@ -54,16 +57,19 @@ Note: Anthropic and Meta AI/FAIR do not provide public RSS feeds.
 ### Setup
 
 1. **Clone or navigate to the bot directory:**
+
    ```bash
    cd /Users/mick/Developer/ClaudeCodeProjects/Zulip/bots/ai-news-bot
    ```
 
 2. **Install dependencies:**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 3. **Configure environment variables:**
+
    ```bash
    cp .env.example .env
    # Edit .env and add your credentials
@@ -134,7 +140,7 @@ services:
 ### config.yaml Structure
 
 ```yaml
-poll_interval_seconds: 3600  # Check every hour
+poll_interval_seconds: 3600 # Check every hour
 
 zulip:
   site: "https://chat.dollhousemcp.com"
@@ -195,6 +201,7 @@ ai-news-bot/
 ## Output Examples
 
 ### RSS Feed Post
+
 ```
 **Hugging Face Blog: Introducing Llama 3.2**
 **Published:** 2025-12-10 14:30 UTC
@@ -202,6 +209,7 @@ ai-news-bot/
 ```
 
 ### Hacker News Post
+
 ```
 **Hacker News: GPT-4 Beats Humans on Common Sense Reasoning**
 **Score:** 256 points | 89 comments
@@ -211,6 +219,7 @@ ai-news-bot/
 ```
 
 ### Google News Post
+
 ```
 **Google News: OpenAI Announces Major Breakthrough in AI Safety**
 **Search Term:** artificial intelligence
@@ -250,6 +259,7 @@ ai-news-bot/
 ## Support
 
 For issues or questions:
+
 - Check the logs (set `logging.level: DEBUG`)
 - Review the configuration file
 - Ensure API credentials are valid
