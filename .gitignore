@@ -14,3 +14,7 @@
 
 # Cached sub-charts
 /helm/zulip/charts/
+
+# Session documentation
+NEXT_SESSION_PROMPT_*.md
+SESSION_NOTES_*.md
