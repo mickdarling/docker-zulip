@@ -38,10 +38,12 @@ services:
       # Domain configuration
       SETTING_EXTERNAL_HOST: "chat.dollhousemcp.com"
       SETTING_ZULIP_ADMINISTRATOR: "${ZULIP_ADMINISTRATOR}"
+      # Allow internal Docker hostname so bots can connect directly
+      SETTING_ALLOWED_HOSTS: '["chat.dollhousemcp.com", "zulip", "localhost"]'
 
       # Cloudflare handles SSL - HTTP-only is now the default, no DISABLE_HTTPS needed
       # Trust Cloudflare reverse proxy IPs + Docker gateway
-      LOADBALANCER_IPS: "172.19.0.1,173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
+      LOADBALANCER_IPS: "172.19.0.0/16,173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
 
       # Email configuration via Resend SMTP
       SETTING_EMAIL_HOST: "smtp.resend.com"
@@ -66,11 +68,12 @@ services:
     build: ./bots/formatter
     restart: unless-stopped
     environment:
-      ZULIP_SITE: "https://chat.dollhousemcp.com"
+      ZULIP_SITE: "http://zulip:80"
       ZULIP_EMAIL: "${FORMATTER_BOT_EMAIL}"
       ZULIP_API_KEY: "${FORMATTER_BOT_API_KEY}"
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   email-notifier:
     build: ./bots/email-notifier
@@ -82,7 +85,8 @@ services:
       - ./bots/email-notifier/credentials.json:/app/credentials.json:ro
       - ./bots/email-notifier/token.json:/app/token.json:rw
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   mcp-news-bot:
     build: ./bots/mcp-news-bot
@@ -92,7 +96,8 @@ services:
     volumes:
       - ./bots/mcp-news-bot/seen_items.json:/app/seen_items.json:rw
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   ai-news-bot:
     build: ./bots/ai-news-bot
@@ -102,7 +107,8 @@ services:
     volumes:
       - ./bots/ai-news-bot/seen_items.json:/app/seen_items.json:rw
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   merview-news-bot:
     build: ./bots/merview-news-bot
@@ -111,6 +117,9 @@ services:
       MERVIEW_NEWS_BOT_API_KEY: "${MERVIEW_NEWS_BOT_API_KEY}"
     volumes:
       - ./bots/merview-news-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      zulip:
+        condition: service_healthy
 
   merview-github-bot:
     build: ./bots/merview-github-bot
@@ -119,6 +128,9 @@ services:
       MERVIEW_GITHUB_BOT_API_KEY: "${MERVIEW_GITHUB_BOT_API_KEY}"
     volumes:
       - ./bots/merview-github-bot/seen_items.json:/app/seen_items.json:rw
+    depends_on:
+      zulip:
+        condition: service_healthy
 
   merview-digest-bot:
     build: ./bots/merview-digest-bot
@@ -126,6 +138,9 @@ services:
     environment:
       MERVIEW_DIGEST_BOT_API_KEY: "${MERVIEW_DIGEST_BOT_API_KEY}"
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
+    depends_on:
+      zulip:
+        condition: service_healthy
 
   claude-skills-bot:
     build: ./bots/claude-skills-bot
@@ -135,7 +150,8 @@ services:
     volumes:
       - ./bots/claude-skills-bot/seen_items.json:/app/seen_items.json:rw
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   discord-merview-bot:
     build: ./bots/discord-merview-bot
@@ -153,8 +169,10 @@ services:
       FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
     volumes:
       - ./bots/arxiv-news-bot/seen_items.json:/app/arxiv-news-bot/seen_items.json:rw
+      - ./bots/arxiv-news-bot/config.yaml:/app/arxiv-news-bot/config.yaml:ro
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   youtube-news-bot:
     build:
@@ -166,8 +184,10 @@ services:
       YOUTUBE_API_KEY: "${YOUTUBE_API_KEY}"
     volumes:
       - ./bots/youtube-news-bot/seen_items.json:/app/youtube-news-bot/seen_items.json:rw
+      - ./bots/youtube-news-bot/config.yaml:/app/youtube-news-bot/config.yaml:ro
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   linkedin-news-bot:
     build:
@@ -178,8 +198,10 @@ services:
       FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
     volumes:
       - ./bots/linkedin-news-bot/seen_items.json:/app/linkedin-news-bot/seen_items.json:rw
+      - ./bots/linkedin-news-bot/config.yaml:/app/linkedin-news-bot/config.yaml:ro
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   twitter-news-bot:
     build:
@@ -190,8 +212,10 @@ services:
       FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
     volumes:
       - ./bots/twitter-news-bot/seen_items.json:/app/twitter-news-bot/seen_items.json:rw
+      - ./bots/twitter-news-bot/config.yaml:/app/twitter-news-bot/config.yaml:ro
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   bluesky-news-bot:
     build:
@@ -204,8 +228,10 @@ services:
       BLUESKY_APP_PASSWORD: "${BLUESKY_APP_PASSWORD}"
     volumes:
       - ./bots/bluesky-news-bot/seen_items.json:/app/bluesky-news-bot/seen_items.json:rw
+      - ./bots/bluesky-news-bot/config.yaml:/app/bluesky-news-bot/config.yaml:ro
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy
 
   mastodon-news-bot:
     build:
@@ -216,5 +242,7 @@ services:
       FORMATTER_BOT_API_KEY: "${FORMATTER_BOT_API_KEY}"
     volumes:
       - ./bots/mastodon-news-bot/seen_items.json:/app/mastodon-news-bot/seen_items.json:rw
+      - ./bots/mastodon-news-bot/config.yaml:/app/mastodon-news-bot/config.yaml:ro
     depends_on:
-      - zulip
+      zulip:
+        condition: service_healthy

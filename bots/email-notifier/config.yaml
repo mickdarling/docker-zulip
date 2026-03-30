@@ -22,7 +22,7 @@ targets:
   - name: "mick"
     watch_addresses:
       - "mick@dollhousemcp.com"
-    zulip_site: "https://chat.dollhousemcp.com"
+    zulip_site: "http://zulip:80"
     zulip_email: "email-bot-bot@chat.dollhousemcp.com"
     zulip_api_key: "${EMAIL_BOT_API_KEY}"
     stream: "email-mick"  # Private stream - only Mick + email-bot
@@ -39,7 +39,7 @@ targets:
       - "info@dollhousemcp.com"
       - "hello@dollhousemcp.com"
       - "contact@dollhousemcp.com"
-    zulip_site: "https://chat.dollhousemcp.com"
+    zulip_site: "http://zulip:80"
     zulip_email: "email-bot-bot@chat.dollhousemcp.com"
     zulip_api_key: "${EMAIL_BOT_API_KEY}"
     stream: "email"  # Public stream for team visibility

@@ -10,7 +10,7 @@ poll_interval_seconds: 14400
 
 # Zulip configuration
 zulip:
-  site: "https://chat.dollhousemcp.com"
+  site: "http://zulip:80"
   email: "formatter-bot@chat.dollhousemcp.com"
   api_key: "${FORMATTER_BOT_API_KEY}"
   stream: "youtube-news"

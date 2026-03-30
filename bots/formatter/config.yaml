@@ -6,7 +6,7 @@
 zulip:
   # Bot credentials (can also use environment variables)
   # ZULIP_EMAIL, ZULIP_API_KEY, ZULIP_SITE
-  site: "https://chat.dollhousemcp.com"
+  site: "http://zulip:80"
   # email and api_key should be set via environment variables
 
 # Formatting rules
